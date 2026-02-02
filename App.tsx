@@ -8,13 +8,14 @@ import Feed from './components/Feed';
 import Navbar from './components/Navbar';
 import ProfileModal from './components/ProfileModal';
 import MembersList from './components/MembersList';
+import EventsList from './components/EventsList';
 import Avatar from './components/Avatar';
-import { Loader2, Home, Users } from 'lucide-react';
+import { Loader2, Home, Users, Calendar } from 'lucide-react';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [view, setView] = useState<AppView>(AppView.LOGIN);
-  const [activeTab, setActiveTab] = useState<'feed' | 'members'>('feed');
+  const [activeTab, setActiveTab] = useState<'feed' | 'members' | 'events'>('feed');
   const [loading, setLoading] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
@@ -75,6 +76,7 @@ const App: React.FC = () => {
         currentUser={user} 
         onProfileClick={() => setShowProfileModal(true)} 
         onTabChange={(tab) => setActiveTab(tab)}
+        activeTab={activeTab}
       />
       
       <main className="flex-1 container mx-auto px-0 sm:px-4 max-w-4xl lg:grid lg:grid-cols-12 gap-6">
@@ -98,6 +100,12 @@ const App: React.FC = () => {
                 <Home size={20} className="text-primary" /> Feed
               </button>
               <button 
+                onClick={() => setActiveTab('events')}
+                className={`w-full text-left p-2.5 rounded-lg transition-colors flex items-center gap-3 text-sm font-semibold ${activeTab === 'events' ? 'bg-gray-200' : 'hover:bg-gray-200'}`}
+              >
+                <Calendar size={20} className="text-green-500" /> Events
+              </button>
+              <button 
                 onClick={() => setActiveTab('members')}
                 className={`w-full text-left p-2.5 rounded-lg transition-colors flex items-center gap-3 text-sm font-semibold ${activeTab === 'members' ? 'bg-gray-200' : 'hover:bg-gray-200'}`}
               >
@@ -110,6 +118,8 @@ const App: React.FC = () => {
         <div className="col-span-12 lg:col-span-6">
           {activeTab === 'feed' ? (
             <Feed currentUser={user} />
+          ) : activeTab === 'events' ? (
+            <EventsList />
           ) : (
             <MembersList />
           )}
@@ -118,9 +128,9 @@ const App: React.FC = () => {
         {/* Right Sidebar (Desktop Only) */}
         <div className="hidden lg:block col-span-3 py-6 sticky top-14 h-[calc(100vh-56px)]">
            <div className="bg-surface rounded-xl p-4 shadow-sm border border-gray-200">
-              <h3 className="font-bold text-text-secondary uppercase text-xs tracking-widest mb-4">Sponsored / AI Picks</h3>
+              <h3 className="font-bold text-text-secondary uppercase text-xs tracking-widest mb-4">Upcoming Highlights</h3>
               <div className="space-y-4">
-                 <div className="group cursor-pointer">
+                 <div className="group cursor-pointer" onClick={() => setActiveTab('events')}>
                     <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2">
                        <img src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="AI Suggestion" />
                     </div>

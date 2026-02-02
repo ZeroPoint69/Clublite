@@ -3,15 +3,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { User, Notification, NotificationType } from '../types';
 import { getNotifications, subscribeToNotifications, markNotificationsAsRead } from '../services/dataService';
 import Avatar from './Avatar';
-import { Home, Users, Bell, Search, Menu, Heart, MessageSquare, Plus } from 'lucide-react';
+import { Home, Users, Bell, Menu, Heart, MessageSquare, Plus, Calendar } from 'lucide-react';
 
 interface NavbarProps {
   currentUser: User;
   onProfileClick: () => void;
-  onTabChange: (tab: 'feed' | 'members') => void;
+  onTabChange: (tab: 'feed' | 'members' | 'events') => void;
+  activeTab: 'feed' | 'members' | 'events';
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChange }) => {
+const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChange, activeTab }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -71,16 +72,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
           <div className="text-2xl font-black text-primary tracking-tighter cursor-pointer" onClick={() => onTabChange('feed')}>
             club<span className="font-light">lite</span>
           </div>
-          <div className="hidden lg:flex ml-2 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-text-secondary" />
-            </div>
-            <input 
-              type="text" 
-              placeholder="Search ClubLite" 
-              className="bg-gray-100 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 w-64"
-            />
-          </div>
         </div>
 
         <div className="flex items-center gap-1">
@@ -88,21 +79,26 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
           <div className="hidden md:flex items-center gap-1 mr-2 border-r border-gray-100 pr-2">
             <button 
               onClick={() => onTabChange('feed')}
-              className="p-3 text-primary hover:bg-gray-50 transition-colors h-14" title="Home"
+              className={`p-3 transition-colors h-14 border-b-2 ${activeTab === 'feed' ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:bg-gray-50'}`} title="Home"
             >
-                 <Home size={24} strokeWidth={2.5} />
+                 <Home size={24} strokeWidth={activeTab === 'feed' ? 2.5 : 2} />
+            </button>
+            <button 
+              onClick={() => onTabChange('events')}
+              className={`p-3 transition-colors h-14 border-b-2 ${activeTab === 'events' ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:bg-gray-50'}`} title="Events"
+            >
+                 <Calendar size={24} strokeWidth={activeTab === 'events' ? 2.5 : 2} />
             </button>
             <button 
               onClick={() => onTabChange('members')}
-              className="p-3 text-text-secondary hover:bg-gray-100 rounded-lg transition-colors h-12" title="Members"
+              className={`p-3 transition-colors h-14 border-b-2 ${activeTab === 'members' ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:bg-gray-50'}`} title="Members"
             >
-                 <Users size={24} />
+                 <Users size={24} strokeWidth={activeTab === 'members' ? 2.5 : 2} />
             </button>
           </div>
           
           {/* Right Side Section: Bell Icon + Profile Group */}
           <div className="flex items-center gap-1.5">
-            {/* Notification Bell next to profile */}
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={handleBellClick}
@@ -156,7 +152,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
               )}
             </div>
 
-            {/* Profile Avatar Trigger */}
             <div 
               className="flex items-center gap-2 p-1 hover:bg-gray-100 rounded-full cursor-pointer transition-colors"
               onClick={onProfileClick}
@@ -168,7 +163,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
               <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" />
             </div>
 
-            {/* Global Menu Trigger (Desktop Only) */}
             <button className="hidden md:block p-2 text-text-secondary hover:bg-gray-100 rounded-full transition-colors">
               <Menu size={20} />
             </button>
@@ -180,21 +174,24 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-surface border-t border-gray-200 flex justify-around items-center h-14 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
         <button 
           onClick={() => onTabChange('feed')}
-          className="flex-1 flex flex-col items-center gap-0.5 text-primary"
+          className={`flex-1 flex flex-col items-center gap-0.5 ${activeTab === 'feed' ? 'text-primary' : 'text-text-secondary'}`}
         >
-          <Home size={22} strokeWidth={2.5} />
-          <span className="text-[10px] font-bold">Home</span>
+          <Home size={22} strokeWidth={activeTab === 'feed' ? 2.5 : 2} />
+          <span className={`text-[10px] ${activeTab === 'feed' ? 'font-bold' : 'font-medium'}`}>Home</span>
+        </button>
+        <button 
+          onClick={() => onTabChange('events')}
+          className={`flex-1 flex flex-col items-center gap-0.5 ${activeTab === 'events' ? 'text-primary' : 'text-text-secondary'}`}
+        >
+          <Calendar size={22} strokeWidth={activeTab === 'events' ? 2.5 : 2} />
+          <span className={`text-[10px] ${activeTab === 'events' ? 'font-bold' : 'font-medium'}`}>Events</span>
         </button>
         <button 
           onClick={() => onTabChange('members')}
-          className="flex-1 flex flex-col items-center gap-0.5 text-text-secondary"
+          className={`flex-1 flex flex-col items-center gap-0.5 ${activeTab === 'members' ? 'text-primary' : 'text-text-secondary'}`}
         >
-          <Users size={22} />
-          <span className="text-[10px] font-medium">Club</span>
-        </button>
-        <button className="flex-1 flex flex-col items-center gap-0.5 text-text-secondary">
-          <Search size={22} />
-          <span className="text-[10px] font-medium">Search</span>
+          <Users size={22} strokeWidth={activeTab === 'members' ? 2.5 : 2} />
+          <span className={`text-[10px] ${activeTab === 'members' ? 'font-bold' : 'font-medium'}`}>Club</span>
         </button>
         <button 
           onClick={onProfileClick}
