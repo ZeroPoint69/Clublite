@@ -1,5 +1,8 @@
 {
   "name": "ClubLite",
   "description": "A lightweight, Facebook-inspired social communication platform for clubs with real-time local sync and AI-assisted content creation.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
 }

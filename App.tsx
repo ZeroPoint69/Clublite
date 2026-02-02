@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User, AppView } from './types';
 import { supabase } from './services/supabaseClient';
@@ -5,7 +6,9 @@ import { mapSessionUser, signOut } from './services/authService';
 import Login from './components/Login';
 import Feed from './components/Feed';
 import Navbar from './components/Navbar';
-import { Loader2 } from 'lucide-react';
+// Added missing imports for icons and Avatar component
+import Avatar from './components/Avatar';
+import { Loader2, Home, Users } from 'lucide-react';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -13,19 +16,25 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Check active session on load
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser(mapSessionUser(session.user));
-        setView(AppView.FEED);
+    // Check initial session
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          setUser(mapSessionUser(session.user));
+          setView(AppView.FEED);
+        }
+      } catch (err) {
+        console.error("Auth init error", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
 
-    // 2. Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    initAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser(mapSessionUser(session.user));
         setView(AppView.FEED);
@@ -40,14 +49,18 @@ const App: React.FC = () => {
   }, []);
 
   const handleLogout = async () => {
-    await signOut();
-    // State update handled by onAuthStateChange
+    try {
+      await signOut();
+    } catch (err) {
+      console.error("Logout error", err);
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f0f2f5] flex items-center justify-center">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+      <div className="min-h-screen bg-bg flex flex-col items-center justify-center gap-4">
+        <div className="text-4xl font-black text-primary tracking-tighter animate-pulse">clublite</div>
+        <Loader2 className="w-8 h-8 text-primary animate-spin opacity-50" />
       </div>
     );
   }
@@ -57,10 +70,45 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg flex flex-col">
       <Navbar currentUser={user} onLogout={handleLogout} />
-      <main className="container mx-auto px-0 md:px-4">
-        <Feed currentUser={user} />
+      <main className="flex-1 container mx-auto px-0 sm:px-4 max-w-4xl lg:grid lg:grid-cols-12 gap-6">
+        {/* Left Sidebar (Desktop Only) */}
+        <div className="hidden lg:block col-span-3 py-6 sticky top-14 h-[calc(100vh-56px)]">
+           <div className="flex items-center gap-3 p-2 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors mb-2">
+              <Avatar src={user.avatar} alt={user.name} size="sm" />
+              <span className="font-bold text-sm">{user.name}</span>
+           </div>
+           <nav className="space-y-1">
+              <button className="w-full text-left p-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-3 text-sm font-semibold">
+                <Home size={20} className="text-primary" /> Feed
+              </button>
+              <button className="w-full text-left p-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-3 text-sm font-semibold">
+                <Users size={20} className="text-blue-400" /> Members
+              </button>
+           </nav>
+        </div>
+
+        {/* Feed Center Column */}
+        <div className="col-span-12 lg:col-span-6">
+          <Feed currentUser={user} />
+        </div>
+
+        {/* Right Sidebar (Desktop Only) */}
+        <div className="hidden lg:block col-span-3 py-6 sticky top-14 h-[calc(100vh-56px)]">
+           <div className="bg-surface rounded-xl p-4 shadow-sm border border-gray-200">
+              <h3 className="font-bold text-text-secondary uppercase text-xs tracking-widest mb-4">Sponsored / AI Picks</h3>
+              <div className="space-y-4">
+                 <div className="group cursor-pointer">
+                    <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-2">
+                       <img src="https://images.unsplash.com/photo-1540553016722-983e48a2cd10?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="AI Suggestion" />
+                    </div>
+                    <p className="text-xs font-bold leading-tight">Join the Weekend Hiking Group!</p>
+                    <p className="text-[10px] text-text-secondary mt-1">Adventure awaits you this Saturday.</p>
+                 </div>
+              </div>
+           </div>
+        </div>
       </main>
     </div>
   );
