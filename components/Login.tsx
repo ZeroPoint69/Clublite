@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { signIn } from '../services/authService';
@@ -109,7 +110,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
       <footer className="absolute bottom-0 w-full p-4 text-center text-xs text-gray-500 bg-white md:bg-transparent">
         <div className="max-w-[980px] mx-auto border-t border-gray-300 pt-4 md:border-none">
-           ClubLite © 2024
+           ClubLite © 2026
         </div>
       </footer>
 
