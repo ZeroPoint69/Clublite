@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User, Post, Comment } from '../types';
 import { likePost, deletePost, addComment, getComments, deleteComment, subscribeToComments } from '../services/dataService';
@@ -49,8 +50,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
   const handleLike = async () => {
     const wasLiked = isLiked;
     setIsLiked(!wasLiked); // Optimistic UI
-    
-    await likePost(post.id, currentUser.id);
+    await likePost(post.id, currentUser.id, currentUser);
   };
 
   const handleDeletePost = async () => {
@@ -65,8 +65,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
     setSendingComment(true);
 
     const comment: Comment = {
-      // Use crypto.randomUUID() for DB compatibility
-      id: crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-0000-0000-' + Date.now().toString(16).padStart(12, '0'),
+      id: crypto.randomUUID(),
       postId: post.id,
       userId: currentUser.id,
       userName: currentUser.name,
@@ -75,7 +74,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
       timestamp: Date.now()
     };
 
-    await addComment(comment);
+    await addComment(comment, currentUser);
     setNewComment('');
     setSendingComment(false);
   };
@@ -92,7 +91,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
     const date = new Date(timestamp);
     const now = new Date();
     const diff = (now.getTime() - date.getTime()) / 1000;
-
     if (diff < 60) return 'Just now';
     if (diff < 3600) return `${Math.floor(diff / 60)}m`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
@@ -210,7 +208,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Write a comment..."
-                    className="w-full bg-gray-100 rounded-full pl-4 pr-10 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    className="w-full bg-gray-100 rounded-full pl-4 pr-10 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 text-text"
                     disabled={sendingComment}
                 />
                 <button 

@@ -81,7 +81,6 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-bg flex flex-col">
       <Navbar 
         currentUser={user} 
-        onLogout={handleLogout} 
         onProfileClick={() => setShowProfileModal(true)} 
       />
       
