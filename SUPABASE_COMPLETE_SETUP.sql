@@ -1,11 +1,11 @@
 
 -- ==========================================================
--- CLUB LITE - SUPABASE COMPLETE SETUP SCRIPT
+-- CLUB LITE - SUPABASE COMPLETE SETUP SCRIPT (UPDATED)
 -- ==========================================================
 
--- 1. Create the 'profiles' table to store public user info
+-- 1. Create the 'profiles' table (ID is UUID but reference removed for easy demo seeding)
 CREATE TABLE IF NOT EXISTS public.profiles (
-    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    id TEXT PRIMARY KEY, -- Changed to TEXT for more flexible seeding
     name TEXT NOT NULL,
     avatar TEXT,
     role TEXT DEFAULT 'member',
@@ -59,26 +59,13 @@ BEGIN;
   CREATE PUBLICATION supabase_realtime FOR TABLE public.posts, public.comments, public.notifications, public.profiles;
 COMMIT;
 
--- 6. RLS Policies
+-- 6. RLS Policies (Allowing public read/write for demo purposes)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Enable read for everyone on profiles" ON public.profiles;
-CREATE POLICY "Enable read for everyone on profiles" ON public.profiles FOR SELECT USING (true);
-
-DROP POLICY IF EXISTS "Enable update for owners on profiles" ON public.profiles;
-CREATE POLICY "Enable update for owners on profiles" ON public.profiles FOR UPDATE USING (auth.uid() = id);
-
-DROP POLICY IF EXISTS "Enable insert for authenticated users on profiles" ON public.profiles;
-CREATE POLICY "Enable insert for authenticated users on profiles" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
-
-DROP POLICY IF EXISTS "Enable all access for public on posts" ON public.posts;
+CREATE POLICY "Enable all for public on profiles" ON public.profiles FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Enable all access for public on posts" ON public.posts FOR ALL USING (true) WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Enable all access for public on comments" ON public.comments;
 CREATE POLICY "Enable all access for public on comments" ON public.comments FOR ALL USING (true) WITH CHECK (true);
-
-DROP POLICY IF EXISTS "Enable all access for public on notifications" ON public.notifications;
 CREATE POLICY "Enable all access for public on notifications" ON public.notifications FOR ALL USING (true) WITH CHECK (true);

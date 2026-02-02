@@ -33,7 +33,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
       if (error) {
         setError(error.message);
       } else if (data.user) {
-        // Check if email confirmation is required by Supabase settings
         if (data.session) {
            onSuccess();
         } else {
@@ -50,7 +49,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm p-4">
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-[432px] overflow-hidden border border-gray-300 relative">
-        {/* Header */}
         <div className="px-4 py-3 border-b border-gray-300 flex justify-between items-start bg-white">
           <div>
             <h2 className="text-3xl font-bold text-[#1c1e21]">Sign Up</h2>
@@ -61,7 +59,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
           </button>
         </div>
 
-        {/* Body */}
         <div className="p-4">
           {error && (
             <div className="mb-3 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-md">
@@ -74,14 +71,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
               <input
                 type="text"
                 placeholder="First name"
-                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[15px] focus:outline-none focus:border-primary"
+                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
               />
               <input
                 type="text"
                 placeholder="Surname"
-                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[15px] focus:outline-none focus:border-primary"
+                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
                 value={surname}
                 onChange={(e) => setSurname(e.target.value)}
               />
@@ -90,7 +87,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
             <input
               type="email"
               placeholder="Mobile number or email address"
-              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[15px] focus:outline-none focus:border-primary"
+              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -98,7 +95,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
             <input
               type="password"
               placeholder="New password"
-              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[15px] focus:outline-none focus:border-primary"
+              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -107,7 +104,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
               <input
                 type="text"
                 placeholder="Secret Code (Optional)"
-                className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] pl-10 placeholder-[#8d949e] text-[15px] focus:outline-none focus:border-primary"
+                className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] pl-10 placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
                 value={secretCode}
                 onChange={(e) => setSecretCode(e.target.value)}
               />

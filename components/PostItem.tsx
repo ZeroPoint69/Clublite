@@ -20,7 +20,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
   const [sendingComment, setSendingComment] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   
-  // Confirmation states
   const [confirmDeletePost, setConfirmDeletePost] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
 
@@ -71,7 +70,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
 
   const handleLike = async () => {
     const wasLiked = isLiked;
-    setIsLiked(!wasLiked); // Optimistic UI
+    setIsLiked(!wasLiked);
     await likePost(post.id, currentUser.id, currentUser);
   };
 
@@ -129,9 +128,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
               <h3 className="font-semibold text-text text-base leading-tight hover:underline cursor-pointer">
                 {post.userName}
               </h3>
-              {/* Optional: We could check if post author is admin from post object, 
-                  but data model doesn't store role in post for now. 
-                  Assume ifuserName ends with Admin (from seed) or just use for UI consistency */}
               {post.userName.toLowerCase().includes('admin') && (
                 <ShieldCheck size={14} className="text-primary fill-primary/10" />
               )}
@@ -262,7 +258,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Write a comment..."
-                    className="w-full bg-gray-100 rounded-full pl-4 pr-10 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 text-text"
+                    className="w-full bg-gray-100 rounded-full pl-4 pr-10 py-2 text-[16px] focus:outline-none focus:ring-1 focus:ring-primary/50 text-text"
                     disabled={sendingComment}
                 />
                 <button 

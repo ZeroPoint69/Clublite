@@ -18,7 +18,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize textarea logic
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -90,7 +89,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
               onChange={(e) => setContent(e.target.value)}
               placeholder={`What's on your mind?`}
               rows={1}
-              className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[15px] text-text py-1 max-h-40 no-scrollbar overflow-y-auto"
+              className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[16px] text-text py-1 max-h-40 no-scrollbar overflow-y-auto"
               disabled={isPosting}
             />
             
