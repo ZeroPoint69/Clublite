@@ -1,11 +1,11 @@
 
 -- ==========================================================
--- CLUB LITE - SUPABASE COMPLETE SETUP SCRIPT (UPDATED)
+-- CLUB LITE - SUPABASE COMPLETE SETUP SCRIPT (ROBUST VERSION)
 -- ==========================================================
 
--- 1. Create the 'profiles' table (ID is UUID but reference removed for easy demo seeding)
+-- 1. Create the 'profiles' table
 CREATE TABLE IF NOT EXISTS public.profiles (
-    id TEXT PRIMARY KEY, -- Changed to TEXT for more flexible seeding
+    id TEXT PRIMARY KEY, 
     name TEXT NOT NULL,
     avatar TEXT,
     role TEXT DEFAULT 'member',
@@ -59,12 +59,20 @@ BEGIN;
   CREATE PUBLICATION supabase_realtime FOR TABLE public.posts, public.comments, public.notifications, public.profiles;
 COMMIT;
 
--- 6. RLS Policies (Allowing public read/write for demo purposes)
+-- 6. RLS Policies
+-- First enable RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
+-- DROP policies if they exist to prevent errors on re-run
+DROP POLICY IF EXISTS "Enable all for public on profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Enable all access for public on posts" ON public.posts;
+DROP POLICY IF EXISTS "Enable all access for public on comments" ON public.comments;
+DROP POLICY IF EXISTS "Enable all access for public on notifications" ON public.notifications;
+
+-- CREATE policies again
 CREATE POLICY "Enable all for public on profiles" ON public.profiles FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Enable all access for public on posts" ON public.posts FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Enable all access for public on comments" ON public.comments FOR ALL USING (true) WITH CHECK (true);
