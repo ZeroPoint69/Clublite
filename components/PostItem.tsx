@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { User, Post, Comment } from '../types';
 import { likePost, deletePost, addComment, getComments, deleteComment, subscribeToComments } from '../services/dataService';
 import Avatar from './Avatar';
-import { ThumbsUp, MessageCircle, Trash2, Send, Loader2 } from 'lucide-react';
+import { ThumbsUp, MessageCircle, Trash2, Send, Loader2, MoreHorizontal } from 'lucide-react';
 
 interface PostItemProps {
   post: Post;
@@ -17,6 +17,8 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
   const [isLiked, setIsLiked] = useState(post.likes.includes(currentUser.id));
   const [loadingComments, setLoadingComments] = useState(false);
   const [sendingComment, setSendingComment] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsLiked(post.likes.includes(currentUser.id));
@@ -47,6 +49,21 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
     };
   }, [showComments, post.id]);
 
+  // Handle click outside to close the three-dot menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMenu]);
+
   const handleLike = async () => {
     const wasLiked = isLiked;
     setIsLiked(!wasLiked); // Optimistic UI
@@ -54,6 +71,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
   };
 
   const handleDeletePost = async () => {
+    setShowMenu(false);
     if (window.confirm('Delete this post?')) {
       await deletePost(post.id);
     }
@@ -111,14 +129,34 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
             </span>
           </div>
         </div>
-        {canDeletePost && (
+
+        {/* Three-dot menu */}
+        <div className="relative" ref={menuRef}>
           <button 
-            onClick={handleDeletePost}
-            className="text-text-secondary hover:text-red-500 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            onClick={() => setShowMenu(!showMenu)}
+            className="text-text-secondary hover:bg-gray-100 p-2 rounded-full transition-colors"
+            title="More options"
           >
-            <Trash2 size={18} />
+            <MoreHorizontal size={20} />
           </button>
-        )}
+
+          {showMenu && (
+            <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-20 animate-in fade-in zoom-in-95 duration-100">
+              {canDeletePost ? (
+                <button 
+                  onClick={handleDeletePost}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium"
+                >
+                  <Trash2 size={16} /> Delete Post
+                </button>
+              ) : (
+                <div className="px-4 py-2 text-sm text-text-secondary italic">
+                  No actions available
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="px-4 pb-2 text-text leading-relaxed whitespace-pre-wrap">
