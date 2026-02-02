@@ -16,7 +16,7 @@ const Feed: React.FC<FeedProps> = ({ currentUser }) => {
   const loadPosts = async () => {
     try {
       const data = await getPosts();
-      setPosts(data); // getPosts already sorts them by timestamp descending
+      setPosts(data);
     } catch (err) {
       console.error("Failed to load posts", err);
     } finally {
@@ -27,7 +27,6 @@ const Feed: React.FC<FeedProps> = ({ currentUser }) => {
   useEffect(() => {
     loadPosts();
 
-    // Subscribe to realtime updates
     const unsubscribe = subscribeToFeed(() => {
         loadPosts();
     });

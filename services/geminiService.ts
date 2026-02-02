@@ -1,14 +1,10 @@
+
 import { GoogleGenAI } from "@google/genai";
 
-const getClient = () => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) return null;
-  return new GoogleGenAI({ apiKey });
-};
-
+// Use the Gemini API to polish text for better engagement and clarity.
 export const polishText = async (text: string): Promise<string> => {
-  const ai = getClient();
-  if (!ai) throw new Error("API Key not found");
+  // Initialize the Gemini client exactly as specified in the rules using the direct process.env.API_KEY.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const response = await ai.models.generateContent({
@@ -17,6 +13,7 @@ export const polishText = async (text: string): Promise<string> => {
       
       Text to polish: "${text}"`,
     });
+    // Use the .text property directly as it returns the generated string output.
     return response.text?.trim() || text;
   } catch (error) {
     console.error("Gemini polish error:", error);

@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { User, Post } from './types';
-import { createPost } from './services/dataService';
-import { polishText } from './services/geminiService';
-import Avatar from './components/Avatar';
+import { User, Post } from '../types';
+import { createPost } from '../services/dataService';
+import { polishText } from '../services/geminiService';
+import Avatar from './Avatar';
 import { Sparkles, Loader2, Image as ImageIcon, Send } from 'lucide-react';
 
 interface CreatePostProps {
@@ -20,7 +20,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
     setIsPosting(true);
 
     const newPost: Post = {
-      // Use standard crypto.randomUUID() which is available in all modern browsers (secure contexts)
       id: crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-0000-0000-' + Date.now().toString(16).padStart(12, '0'),
       userId: currentUser.id,
       userName: currentUser.name,
