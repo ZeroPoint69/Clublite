@@ -62,49 +62,49 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
 
   return (
     <>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-200 animate-in zoom-in-95 duration-200">
-          <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+      <div className="fixed inset-0 z-[120] flex items-center justify-center bg-bg/90 backdrop-blur-md p-4">
+        <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border animate-in zoom-in-95 duration-300">
+          <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-bg/30">
             <h2 className="text-xl font-bold text-text">Account Settings</h2>
-            <button onClick={onClose} className="text-text-secondary hover:bg-gray-100 active:scale-90 rounded-full p-1.5 transition-all">
+            <button onClick={onClose} className="text-text-secondary hover:bg-bg active:scale-90 rounded-full p-2 transition-all">
               <X size={20} />
             </button>
           </div>
 
-          <div className="p-6">
-            <div className="flex flex-col items-center mb-8">
+          <div className="p-8">
+            <div className="flex flex-col items-center mb-10">
               <div className="relative group">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/10 group-hover:border-primary/30 transition-all">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 group-hover:border-primary/50 shadow-2xl transition-all duration-300">
                   <img src={avatar} alt="Profile Preview" className="w-full h-full object-cover" />
                 </div>
                 <button 
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 active:opacity-100 rounded-full transition-opacity cursor-pointer"
+                  className="absolute inset-0 flex items-center justify-center bg-bg/40 opacity-0 group-hover:opacity-100 active:opacity-100 rounded-full transition-opacity cursor-pointer backdrop-blur-sm"
                 >
-                  <Camera size={24} className="text-white" />
+                  <Camera size={28} className="text-white drop-shadow-lg" />
                 </button>
                 <button 
                   type="button"
                   onClick={handleRandomize}
-                  className="absolute bottom-0 right-0 bg-white shadow-md border border-gray-200 p-2 rounded-full hover:bg-gray-50 active:scale-90 text-primary transition-all"
+                  className="absolute bottom-0 right-0 bg-surface shadow-xl border border-border p-2.5 rounded-full hover:bg-bg active:scale-90 text-primary transition-all"
                   title="Randomize Avatar"
                 >
-                  <RefreshCw size={18} />
+                  <RefreshCw size={20} />
                 </button>
               </div>
-              <p className="mt-2 text-xs font-medium text-text-secondary uppercase tracking-widest">Profile Picture</p>
+              <p className="mt-4 text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">Profile Identity</p>
               <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept="image/*" className="hidden" />
             </div>
 
-            <form onSubmit={handleSave} className="space-y-4">
+            <form onSubmit={handleSave} className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-text mb-1.5">Your Name</label>
+                <label className="block text-xs font-black text-text-secondary uppercase tracking-widest mb-2 ml-1">Full Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  className="w-full bg-bg border border-border rounded-xl px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-text"
                   placeholder="Your full name"
                   required
                 />
@@ -113,30 +113,30 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
               <button
                 type="submit"
                 disabled={loading || success || loggingOut}
-                className={`w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-white transition-all shadow-md active:scale-[0.98] ${
-                  success ? 'bg-green-500 shadow-green-200' : 'bg-primary hover:bg-primary-hover shadow-primary/20'
+                className={`w-full flex justify-center items-center gap-3 px-4 py-4 rounded-xl font-bold text-bg transition-all shadow-xl active:scale-[0.98] ${
+                  success ? 'bg-secondary' : 'bg-primary hover:bg-primary-hover shadow-primary/20'
                 }`}
               >
-                {loading ? <Loader2 size={20} className="animate-spin" /> : success ? <><Check size={20} /> Saved!</> : 'Save Changes'}
+                {loading ? <Loader2 size={22} className="animate-spin" /> : success ? <><Check size={22} /> Changes Saved!</> : 'Save Profile'}
               </button>
 
-              <div className="border-t border-gray-100 my-4 pt-4">
+              <div className="border-t border-border my-6 pt-6">
                 <button
                   type="button"
                   onClick={() => setShowLogoutConfirm(true)}
                   disabled={loggingOut}
-                  className="w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-red-600 bg-red-50 hover:bg-red-100 active:scale-[0.98] transition-all border border-red-200 shadow-sm"
+                  className="w-full flex justify-center items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-red-400 bg-red-900/10 hover:bg-red-900/20 active:scale-[0.98] transition-all border border-red-900/30 shadow-sm"
                 >
-                  {loggingOut ? <Loader2 size={18} className="animate-spin" /> : <><LogOut size={18} /> Sign Out</>}
+                  {loggingOut ? <Loader2 size={20} className="animate-spin" /> : <><LogOut size={20} /> Sign Out</>}
                 </button>
               </div>
 
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full text-center text-text-secondary text-sm font-medium hover:underline active:opacity-60 transition-all py-2"
+                className="w-full text-center text-text-secondary text-xs font-black uppercase tracking-widest hover:text-text active:opacity-60 transition-all py-2"
               >
-                Back to Club
+                Return to সংঘ
               </button>
             </form>
           </div>
@@ -146,7 +146,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
       <ConfirmDialog 
         isOpen={showLogoutConfirm}
         title="Sign Out?"
-        message="Are you sure you want to log out of your ClubLite account?"
+        message="Are you sure you want to log out of your জয়রা উজ্জ্বল সংঘ account?"
         confirmLabel="Logout"
         onConfirm={onConfirmLogout}
         onCancel={() => setShowLogoutConfirm(false)}

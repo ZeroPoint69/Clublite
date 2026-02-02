@@ -59,26 +59,26 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
 
   const getNotificationBg = (type: NotificationType) => {
     switch(type) {
-      case NotificationType.LIKE: return 'bg-red-500';
-      case NotificationType.COMMENT: return 'bg-blue-500';
-      case NotificationType.NEW_POST: return 'bg-green-500';
+      case NotificationType.LIKE: return 'bg-red-600';
+      case NotificationType.COMMENT: return 'bg-primary';
+      case NotificationType.NEW_POST: return 'bg-secondary';
     }
   };
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-surface shadow-sm border-b border-gray-200 px-4 h-14 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 bg-surface shadow-md border-b border-border px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div 
-            className="text-2xl font-black text-primary tracking-tighter cursor-pointer active:scale-95 transition-transform" 
+            className="text-lg font-black text-primary tracking-tighter cursor-pointer active:scale-95 transition-transform" 
             onClick={() => onTabChange('feed')}
           >
-            club<span className="font-light">lite</span>
+            জয়রা উজ্জ্বল সংঘ
           </div>
         </div>
 
         <div className="flex items-center gap-1">
-          <div className="hidden md:flex items-center gap-1 mr-2 border-r border-gray-100 pr-2">
+          <div className="hidden md:flex items-center gap-1 mr-2 border-r border-border pr-2">
             {[
               { id: 'feed', icon: Home, label: 'Home' },
               { id: 'events', icon: Calendar, label: 'Events' },
@@ -87,7 +87,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
               <button 
                 key={id}
                 onClick={() => onTabChange(id as any)}
-                className={`p-3 transition-all h-14 border-b-2 active:scale-90 ${activeTab === id ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:bg-gray-50'}`} 
+                className={`p-3 transition-all h-14 border-b-2 active:scale-90 ${activeTab === id ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:bg-bg'}`} 
                 title={label}
               >
                  <Icon size={24} strokeWidth={activeTab === id ? 2.5 : 2} />
@@ -99,7 +99,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={handleBellClick}
-                className={`p-2.5 rounded-full transition-all active:scale-90 ${showNotifications ? 'bg-gray-100 text-primary' : 'text-text-secondary hover:bg-gray-100'}`} 
+                className={`p-2.5 rounded-full transition-all active:scale-90 ${showNotifications ? 'bg-bg text-primary' : 'text-text-secondary hover:bg-bg'}`} 
                 title="Notifications"
               >
                  <Bell size={24} />
@@ -111,9 +111,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="p-4 border-b border-gray-100">
-                    <h3 className="font-bold text-lg">Notifications</h3>
+                <div className="absolute right-0 mt-2 w-80 bg-surface rounded-xl shadow-2xl border border-border overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="p-4 border-b border-border bg-bg/50">
+                    <h3 className="font-bold text-lg text-text">Notifications</h3>
                   </div>
                   <div className="max-h-96 overflow-y-auto no-scrollbar">
                     {notifications.length === 0 ? (
@@ -123,7 +123,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
                       </div>
                     ) : (
                       notifications.map(n => (
-                        <div key={n.id} className={`p-3 flex gap-3 hover:bg-gray-50 cursor-pointer transition-all active:bg-gray-100 border-l-4 ${n.isRead ? 'border-transparent' : 'border-primary bg-primary/5'}`}>
+                        <div key={n.id} className={`p-3 flex gap-3 hover:bg-bg cursor-pointer transition-all active:bg-bg border-l-4 ${n.isRead ? 'border-transparent' : 'border-primary bg-primary/5'}`}>
                           <div className="relative shrink-0">
                             <Avatar src={n.actorAvatar} alt={n.actorName} size="sm" />
                             <div className={`absolute -bottom-1 -right-1 p-1 rounded-full ${getNotificationBg(n.type)}`}>
@@ -150,7 +150,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
             </div>
 
             <div 
-              className="flex items-center gap-2 p-1 hover:bg-gray-100 active:scale-95 rounded-full cursor-pointer transition-all"
+              className="flex items-center gap-2 p-1 hover:bg-bg active:scale-95 rounded-full cursor-pointer transition-all"
               onClick={onProfileClick}
             >
               <div className="hidden lg:flex flex-col items-end mr-1">
@@ -160,14 +160,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
               <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" />
             </div>
 
-            <button className="hidden md:block p-2 text-text-secondary hover:bg-gray-100 active:scale-90 rounded-full transition-all">
+            <button className="hidden md:block p-2 text-text-secondary hover:bg-bg active:scale-90 rounded-full transition-all">
               <Menu size={20} />
             </button>
           </div>
         </div>
       </nav>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-surface border-t border-gray-200 flex justify-around items-center h-14 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-surface border-t border-border flex justify-around items-center h-14 shadow-2xl">
         {[
           { id: 'feed', icon: Home, label: 'Home' },
           { id: 'events', icon: Calendar, label: 'Events' },

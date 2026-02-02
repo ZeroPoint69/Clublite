@@ -1,6 +1,6 @@
 {
-  "name": "ClubLite",
-  "description": "A lightweight, Facebook-inspired social communication platform for clubs with real-time local sync and AI-assisted content creation.",
+  "name": "জয়রা উজ্জ্বল সংঘ",
+  "description": "জয়রা উজ্জ্বল সংঘের জন্য একটি হালকা সামাজিক যোগাযোগের প্ল্যাটফর্ম।",
   "requestFramePermissions": [
     "camera",
     "microphone"

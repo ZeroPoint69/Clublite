@@ -77,52 +77,52 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
   };
 
   return (
-    <div className="bg-surface p-3 shadow-sm mb-4 border-b border-gray-200 md:rounded-xl md:border transition-all">
+    <div className="bg-surface p-4 shadow-lg mb-4 border-b border-border md:rounded-xl md:border transition-all">
       <div className="flex items-start gap-3">
         <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" className="mt-1" />
         
-        <div className="flex-1 flex flex-col gap-2">
-          <div className="flex-1 bg-gray-100 rounded-2xl flex items-end px-3 py-1.5 focus-within:ring-1 focus-within:ring-primary/30 transition-shadow">
+        <div className="flex-1 flex flex-col gap-3">
+          <div className="flex-1 bg-bg border border-border rounded-xl flex items-end px-3 py-2 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
             <textarea
               ref={textareaRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={`What's on your mind?`}
               rows={1}
-              className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[16px] text-text py-1 max-h-40 no-scrollbar overflow-y-auto"
+              className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[16px] text-text py-1.5 max-h-40 no-scrollbar overflow-y-auto"
               disabled={isPosting}
             />
             
-            <div className="flex items-center gap-1 mb-0.5 ml-2 border-l border-gray-300 pl-1">
+            <div className="flex items-center gap-1.5 mb-1 ml-2 border-l border-border pl-2">
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="p-1.5 text-green-600 hover:bg-gray-200 rounded-full transition-colors"
+                className="p-2 text-secondary hover:bg-surface active:scale-90 rounded-full transition-all"
                 title="Add Photo"
               >
-                 <ImageIcon size={18} />
+                 <ImageIcon size={20} />
               </button>
               
               <button 
                 onClick={handlePolish}
                 disabled={isPolishing || !content || isPosting}
-                className={`p-1.5 rounded-full transition-colors ${
-                  isPolishing ? 'text-purple-400' : 'text-purple-600 hover:bg-purple-100'
+                className={`p-2 rounded-full transition-all active:scale-90 ${
+                  isPolishing ? 'text-text-secondary' : 'text-primary hover:bg-surface'
                 }`}
                 title="AI Polish"
               >
-                {isPolishing ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+                {isPolishing ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
               </button>
             </div>
           </div>
 
           {selectedImage && (
-            <div className="relative rounded-lg overflow-hidden border border-gray-200 max-w-[200px] group">
-               <img src={selectedImage} alt="Selected preview" className="w-full h-auto max-h-40 object-cover" />
+            <div className="relative rounded-lg overflow-hidden border border-border max-w-[240px] group shadow-md">
+               <img src={selectedImage} alt="Selected preview" className="w-full h-auto max-h-48 object-cover" />
                <button 
                  onClick={() => setSelectedImage(null)}
-                 className="absolute top-1 right-1 bg-black/60 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                 className="absolute top-2 right-2 bg-bg/80 text-text p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
                >
-                 <X size={14} />
+                 <X size={16} />
                </button>
             </div>
           )}
@@ -131,10 +131,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
         <button
           onClick={handlePost}
           disabled={(!content.trim() && !selectedImage) || isPosting}
-          className="bg-primary text-white p-2.5 rounded-full hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm self-end"
+          className="bg-primary text-white p-3 rounded-full hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 active:scale-95 self-end"
           title="Post Now"
         >
-          {isPosting ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} className="ml-0.5" />}
+          {isPosting ? <Loader2 size={22} className="animate-spin" /> : <Send size={22} className="ml-0.5" />}
         </button>
       </div>
 

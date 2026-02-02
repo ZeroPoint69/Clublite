@@ -1,24 +1,26 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <title>ClubLite</title>
+    <title>জয়রা উজ্জ্বল সংঘ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             colors: {
-              primary: '#1877F2',
-              'primary-hover': '#166fe5',
-              secondary: '#42b72a',
-              'secondary-hover': '#36a420',
-              bg: '#f0f2f5',
-              surface: '#ffffff',
-              text: '#050505',
-              'text-secondary': '#65676B',
+              primary: '#2e7d32',
+              'primary-hover': '#1b5e20',
+              secondary: '#81c784',
+              'secondary-hover': '#a5d6a7',
+              bg: '#081408',
+              surface: '#112111',
+              text: '#f1f8f1',
+              'text-secondary': '#98b498',
+              border: '#1e331e',
             }
           }
         }
@@ -28,7 +30,8 @@
     <style>
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #f0f2f5;
+        background-color: #081408;
+        color: #f1f8f1;
       }
       /* Hide scrollbar for Chrome, Safari and Opera */
       .no-scrollbar::-webkit-scrollbar {
@@ -42,6 +45,12 @@
       /* Prevent iOS auto-zoom on focus by ensuring input font size is at least 16px */
       input, textarea, select {
         font-size: 16px !important;
+        background-color: #1a2e1a;
+        color: #f1f8f1;
+        border-color: #1e331e;
+      }
+      ::placeholder {
+        color: #6a8c6a;
       }
     </style>
   <script type="importmap">
