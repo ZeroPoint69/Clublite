@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { User, Post, Comment } from '../types';
 import { likePost, deletePost, addComment, getComments, deleteComment, subscribeToComments } from '../services/dataService';
 import Avatar from './Avatar';
+import ConfirmDialog from './ConfirmDialog';
 import { ThumbsUp, MessageCircle, Trash2, Send, Loader2, MoreHorizontal } from 'lucide-react';
 
 interface PostItemProps {
@@ -18,6 +19,11 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
   const [loadingComments, setLoadingComments] = useState(false);
   const [sendingComment, setSendingComment] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  
+  // Confirmation states
+  const [confirmDeletePost, setConfirmDeletePost] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
+
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,7 +55,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
     };
   }, [showComments, post.id]);
 
-  // Handle click outside to close the three-dot menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -70,10 +75,15 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
     await likePost(post.id, currentUser.id, currentUser);
   };
 
-  const handleDeletePost = async () => {
-    setShowMenu(false);
-    if (window.confirm('Delete this post?')) {
-      await deletePost(post.id);
+  const onConfirmDeletePost = async () => {
+    setConfirmDeletePost(false);
+    await deletePost(post.id);
+  };
+
+  const onConfirmDeleteComment = async () => {
+    if (commentToDelete) {
+      await deleteComment(commentToDelete, post.id);
+      setCommentToDelete(null);
     }
   };
 
@@ -95,12 +105,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
     await addComment(comment, currentUser);
     setNewComment('');
     setSendingComment(false);
-  };
-
-  const handleDeleteComment = async (commentId: string) => {
-    if (window.confirm('Delete this comment?')) {
-      await deleteComment(commentId, post.id);
-    }
   };
 
   const canDeletePost = currentUser.role === 'admin' || currentUser.id === post.userId;
@@ -130,7 +134,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
           </div>
         </div>
 
-        {/* Three-dot menu */}
         <div className="relative" ref={menuRef}>
           <button 
             onClick={() => setShowMenu(!showMenu)}
@@ -144,7 +147,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
             <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-20 animate-in fade-in zoom-in-95 duration-100">
               {canDeletePost ? (
                 <button 
-                  onClick={handleDeletePost}
+                  onClick={() => { setShowMenu(false); setConfirmDeletePost(true); }}
                   className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium"
                 >
                   <Trash2 size={16} /> Delete Post
@@ -225,7 +228,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
                             <span>{formatDate(comment.timestamp)}</span>
                             {(currentUser.role === 'admin' || currentUser.id === comment.userId) && (
                             <button 
-                                onClick={() => handleDeleteComment(comment.id)}
+                                onClick={() => setCommentToDelete(comment.id)}
                                 className="font-medium hover:text-red-500 hover:underline"
                             >
                                 Delete
@@ -260,6 +263,25 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
           </form>
         </div>
       )}
+
+      {/* Modern Confirmation Dialogs */}
+      <ConfirmDialog 
+        isOpen={confirmDeletePost}
+        title="Delete Post?"
+        message="Are you sure you want to remove this post? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={onConfirmDeletePost}
+        onCancel={() => setConfirmDeletePost(false)}
+      />
+
+      <ConfirmDialog 
+        isOpen={!!commentToDelete}
+        title="Delete Comment?"
+        message="Do you really want to delete this comment?"
+        confirmLabel="Delete"
+        onConfirm={onConfirmDeleteComment}
+        onCancel={() => setCommentToDelete(null)}
+      />
     </div>
   );
 };
