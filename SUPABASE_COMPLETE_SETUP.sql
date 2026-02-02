@@ -1,21 +1,21 @@
 
 -- ==========================================================
--- CLUB LITE - PRODUCTION DATABASE RESET & SETUP (ROBUST)
+-- CLUB LITE - PRODUCTION DATABASE SETUP (REFINED)
 -- ==========================================================
 
--- 1. Clean up existing objects to ensure type consistency
+-- 1. Clean up existing objects to ensure a fresh start
 DROP TABLE IF EXISTS public.notifications CASCADE;
 DROP TABLE IF EXISTS public.comments CASCADE;
 DROP TABLE IF EXISTS public.posts CASCADE;
 DROP TABLE IF EXISTS public.events CASCADE;
 DROP TABLE IF EXISTS public.profiles CASCADE;
 
--- 2. Create the 'profiles' table with strict UUID auth reference
+-- 2. Create the 'profiles' table (UUID-based with role)
 CREATE TABLE public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE, 
     name TEXT NOT NULL,
     avatar TEXT,
-    role TEXT DEFAULT 'member',
+    role TEXT DEFAULT 'member' CHECK (role IN ('member', 'admin')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -29,7 +29,7 @@ CREATE TABLE public.posts (
     image TEXT,
     likes JSONB DEFAULT '[]'::jsonb,
     comment_count INTEGER DEFAULT 0,
-    timestamp BIGINT,
+    timestamp BIGINT DEFAULT (extract(epoch from now()) * 1000),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -41,7 +41,7 @@ CREATE TABLE public.comments (
     user_name TEXT NOT NULL,
     user_avatar TEXT,
     content TEXT NOT NULL,
-    timestamp BIGINT,
+    timestamp BIGINT DEFAULT (extract(epoch from now()) * 1000),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -56,7 +56,7 @@ CREATE TABLE public.notifications (
     post_id UUID REFERENCES public.posts(id) ON DELETE CASCADE,
     content TEXT,
     is_read BOOLEAN DEFAULT false,
-    timestamp BIGINT,
+    timestamp BIGINT DEFAULT (extract(epoch from now()) * 1000),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -69,48 +69,74 @@ CREATE TABLE public.events (
     time TEXT NOT NULL,
     location TEXT NOT NULL,
     image TEXT,
-    attendees JSONB DEFAULT '[]'::jsonb,
+    attendees JSONB DEFAULT '[]'::jsonb, -- Stores user IDs who joined
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 7. Enable Realtime
+-- 7. Enable Realtime for all tables
 BEGIN;
   DROP PUBLICATION IF EXISTS supabase_realtime;
   CREATE PUBLICATION supabase_realtime FOR TABLE public.posts, public.comments, public.notifications, public.profiles, public.events;
 COMMIT;
 
--- 8. RLS Policies
+-- 8. Enable Row Level Security (RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
 
--- Profiles
+-- 9. RLS POLICIES
+
+-- PROFILES: Everyone can see, users can update self
 CREATE POLICY "Public profiles are viewable by everyone" ON public.profiles FOR SELECT USING (true);
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Enable insert for authenticated users only" ON public.profiles FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
--- Posts
+-- POSTS: Public view, authenticated create, owner manage
 CREATE POLICY "Posts are viewable by everyone" ON public.posts FOR SELECT USING (true);
 CREATE POLICY "Authenticated users can create posts" ON public.posts FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Users can update/delete own posts" ON public.posts FOR ALL USING (auth.uid() = user_id);
 
--- Comments
+-- COMMENTS: Public view, authenticated create, owner manage
 CREATE POLICY "Comments are viewable by everyone" ON public.comments FOR SELECT USING (true);
 CREATE POLICY "Authenticated users can comment" ON public.comments FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Users can delete own comments" ON public.comments FOR DELETE USING (auth.uid() = user_id);
 
--- Notifications
+-- NOTIFICATIONS: User only
 CREATE POLICY "Users can view own notifications" ON public.notifications FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can update own notifications" ON public.notifications FOR UPDATE USING (auth.uid() = user_id);
 
--- Events
+-- EVENTS: 
+-- (a) Everyone can see events
 CREATE POLICY "Events are viewable by everyone" ON public.events FOR SELECT USING (true);
-CREATE POLICY "Only admins can manage events" ON public.events FOR ALL 
+
+-- (b) Only Admins can CREATE events
+CREATE POLICY "Admins can create events" ON public.events FOR INSERT 
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.profiles 
+    WHERE id = auth.uid() AND role = 'admin'
+  )
+);
+
+-- (c) Only Admins can DELETE events
+CREATE POLICY "Admins can delete events" ON public.events FOR DELETE 
 USING (
   EXISTS (
     SELECT 1 FROM public.profiles 
-    WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    WHERE id = auth.uid() AND role = 'admin'
   )
 );
+
+-- (d) Admins can edit everything, Members can update attendees list (Join/Leave)
+CREATE POLICY "Update events management" ON public.events FOR UPDATE 
+USING (
+  (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'))
+  OR 
+  (auth.role() = 'authenticated') -- Allows joining for members
+);
+
+-- (Optional) Helper to verify your admin status
+-- To make yourself an admin manually in SQL Editor:
+-- UPDATE public.profiles SET role = 'admin' WHERE id = 'YOUR-USER-UUID-HERE';
