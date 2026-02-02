@@ -1,6 +1,6 @@
 
 import { supabase } from './supabaseClient';
-import { Post, Comment, User, Notification, NotificationType } from '../types';
+import { Post, Comment, User, Notification, NotificationType, ClubEvent } from '../types';
 
 // --- Profiles / Members ---
 
@@ -25,9 +25,6 @@ export const getMembers = async (): Promise<User[]> => {
 };
 
 export const removeMember = async (memberId: string): Promise<void> => {
-  // Note: This removes from profiles, but Supabase Auth user remains 
-  // unless handled by a Service Role / Edge Function.
-  // For this app, we remove their profile and all their data.
   await supabase.from('comments').delete().eq('user_id', memberId);
   await supabase.from('posts').delete().eq('user_id', memberId);
   const { error } = await supabase.from('profiles').delete().eq('id', memberId);
@@ -250,6 +247,58 @@ export const deleteComment = async (commentId: string, postId: string): Promise<
   }
 };
 
+// --- Events ---
+
+export const getEvents = async (): Promise<ClubEvent[]> => {
+  const { data, error } = await supabase
+    .from('events')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching events:', error);
+    return [];
+  }
+  return data.map(row => ({
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    date: row.date,
+    time: row.time,
+    location: row.location,
+    image: row.image,
+    attendees: row.attendees || []
+  }));
+};
+
+export const createEvent = async (event: Omit<ClubEvent, 'id'>): Promise<void> => {
+  const { error } = await supabase.from('events').insert(event);
+  if (error) console.error('Error creating event:', error);
+};
+
+export const updateEvent = async (id: string, event: Partial<ClubEvent>): Promise<void> => {
+  const { error } = await supabase.from('events').update(event).eq('id', id);
+  if (error) console.error('Error updating event:', error);
+};
+
+export const deleteEvent = async (id: string): Promise<void> => {
+  const { error } = await supabase.from('events').delete().eq('id', id);
+  if (error) console.error('Error deleting event:', error);
+};
+
+export const toggleJoinEvent = async (eventId: string, userId: string): Promise<void> => {
+  const { data: event } = await supabase.from('events').select('attendees').eq('id', eventId).single();
+  if (!event) return;
+
+  const currentAttendees: string[] = event.attendees || [];
+  const isJoined = currentAttendees.includes(userId);
+  const newAttendees = isJoined
+    ? currentAttendees.filter(id => id !== userId)
+    : [...currentAttendees, userId];
+
+  await supabase.from('events').update({ attendees: newAttendees }).eq('id', eventId);
+};
+
 // --- Realtime Subscriptions ---
 
 export const subscribeToFeed = (onUpdate: () => void) => {
@@ -280,6 +329,14 @@ export const subscribeToMembers = (onUpdate: () => void) => {
   const channel = supabase
     .channel('public:profiles')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => onUpdate())
+    .subscribe();
+  return () => supabase.removeChannel(channel);
+};
+
+export const subscribeToEvents = (onUpdate: () => void) => {
+  const channel = supabase
+    .channel('public:events')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, () => onUpdate())
     .subscribe();
   return () => supabase.removeChannel(channel);
 };

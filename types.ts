@@ -28,6 +28,18 @@ export interface Post {
   commentCount: number;
 }
 
+export interface ClubEvent {
+  id: string;
+  title: string;
+  description: string;
+  date: string; // e.g. "2026-03-15"
+  time: string; // e.g. "07:30 AM"
+  location: string;
+  image: string;
+  attendees: string[]; // Array of userIds
+  created_at?: string;
+}
+
 export enum NotificationType {
   LIKE = 'LIKE',
   COMMENT = 'COMMENT',
