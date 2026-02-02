@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { User, Post } from '../types';
 import { getPosts, subscribeToFeed } from '../services/dataService';
@@ -37,25 +38,30 @@ const Feed: React.FC<FeedProps> = ({ currentUser }) => {
   }, []);
 
   return (
-    <div className="max-w-xl mx-auto pb-20 pt-4">
+    <div className="max-w-xl mx-auto pb-20 sm:pt-4">
+      {/* Post Box at the top of the serial */}
       <CreatePost currentUser={currentUser} />
       
-      {loading ? (
-          <div className="flex justify-center py-10">
-              <Loader2 className="animate-spin text-primary" size={32} />
-          </div>
-      ) : (
-        <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
+        {loading ? (
+            <div className="flex justify-center py-12">
+                <Loader2 className="animate-spin text-primary" size={32} />
+            </div>
+        ) : (
+          <>
             {posts.map(post => (
-            <PostItem key={post.id} post={post} currentUser={currentUser} />
+              <PostItem key={post.id} post={post} currentUser={currentUser} />
             ))}
+            
             {posts.length === 0 && (
-                <div className="text-center py-10 text-gray-500">
-                    <p>No posts yet. Be the first to share!</p>
+                <div className="bg-white p-12 text-center rounded-lg border border-gray-200 text-gray-500 shadow-sm mx-2 sm:mx-0">
+                    <p className="font-medium">এখনও কোনো পোস্ট নেই।</p>
+                    <p className="text-sm">প্রথম পোস্টটি আপনিই করুন!</p>
                 </div>
             )}
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

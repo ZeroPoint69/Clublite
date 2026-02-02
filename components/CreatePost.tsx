@@ -77,50 +77,50 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
   };
 
   return (
-    <div className="bg-white p-4 shadow-sm mb-4 border-b border-gray-200 md:rounded-lg md:border transition-all">
-      <div className="flex items-start gap-3">
-        <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" className="mt-1" />
+    <div className="bg-white p-3 sm:p-4 shadow-sm mb-3 sm:mb-4 border-b border-gray-200 md:rounded-lg md:border transition-all">
+      <div className="flex items-start gap-2 sm:gap-3">
+        <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" className="mt-1 shrink-0" />
         
         <div className="flex-1 flex flex-col gap-3">
-          <div className="flex-1 bg-gray-100 border border-gray-200 rounded-xl flex items-end px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 focus-within:bg-white focus-within:border-primary transition-all">
+          <div className="flex-1 bg-gray-100 border border-transparent rounded-xl flex items-end px-3 py-1.5 focus-within:ring-1 focus-within:ring-primary/20 focus-within:bg-white focus-within:border-primary/30 transition-all">
             <textarea
               ref={textareaRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={`${currentUser.name.split(' ')[0]}, আপনার মনে কী আছে?`}
               rows={1}
-              className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[17px] text-[#1c1e21] font-normal py-1.5 max-h-60 no-scrollbar overflow-y-auto leading-relaxed"
+              className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[16px] text-[#1c1e21] font-normal py-1.5 max-h-60 no-scrollbar overflow-y-auto leading-relaxed"
               disabled={isPosting}
             />
             
-            <div className="flex items-center gap-1.5 mb-1 ml-2 border-l border-gray-200 pl-2">
+            <div className="flex items-center gap-1 mb-1 ml-1 border-l border-gray-200 pl-1 sm:pl-2">
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2 text-gray-500 hover:bg-gray-200 active:scale-90 rounded-full transition-all"
+                className="p-1.5 sm:p-2 text-gray-500 hover:bg-gray-200 active:scale-90 rounded-full transition-all"
                 title="ছবি যোগ করুন"
               >
-                 <ImageIcon size={20} />
+                 <ImageIcon size={18} sm:size={20} />
               </button>
               
               <button 
                 onClick={handlePolish}
                 disabled={isPolishing || !content || isPosting}
-                className={`p-2 rounded-full transition-all active:scale-90 ${
+                className={`p-1.5 sm:p-2 rounded-full transition-all active:scale-90 ${
                   isPolishing ? 'text-gray-400' : 'text-primary hover:bg-gray-200'
                 }`}
                 title="AI দিয়ে লেখা উন্নত করুন"
               >
-                {isPolishing ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
+                {isPolishing ? <Loader2 size={18} sm:size={20} className="animate-spin" /> : <Sparkles size={18} sm:size={20} />}
               </button>
             </div>
           </div>
 
           {selectedImage && (
-            <div className="relative rounded-lg overflow-hidden border border-gray-200 max-w-[240px] group shadow-sm">
+            <div className="relative rounded-lg overflow-hidden border border-gray-200 max-w-full sm:max-w-[240px] group shadow-sm">
                <img src={selectedImage} alt="Selected preview" className="w-full h-auto max-h-48 object-cover" />
                <button 
                  onClick={() => setSelectedImage(null)}
-                 className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity active:opacity-100"
+                 className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity active:opacity-100"
                >
                  <X size={16} />
                </button>
@@ -131,9 +131,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
         <button
           onClick={handlePost}
           disabled={(!content.trim() && !selectedImage) || isPosting}
-          className="bg-primary text-white p-3 rounded-full hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md active:scale-95 self-end flex items-center justify-center"
+          className="bg-primary text-white p-2.5 sm:p-3 rounded-full hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md active:scale-95 self-end flex items-center justify-center shrink-0"
         >
-          {isPosting ? <Loader2 size={22} className="animate-spin" /> : <Send size={22} className="ml-0.5" />}
+          {isPosting ? <Loader2 size={20} sm:size={22} className="animate-spin" /> : <Send size={20} sm:size={22} className="ml-0.5" />}
         </button>
       </div>
 
