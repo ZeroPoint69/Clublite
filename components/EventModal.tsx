@@ -1,6 +1,6 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Loader2, Calendar, Clock, MapPin, Type, AlignLeft, Image as ImageIcon, Upload, RefreshCw } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { X, Loader2, Calendar, Clock, MapPin, Type, AlignLeft, Image as ImageIcon, Upload } from 'lucide-react';
 import { ClubEvent } from '../types';
 import { createEvent, updateEvent } from '../services/dataService';
 
@@ -52,68 +52,45 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSuccess }) =>
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-bg/90 backdrop-blur-md" onClick={onClose} />
-      <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative z-10 animate-in zoom-in-95 duration-200 border border-border">
-        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-bg/30">
-          <h2 className="text-xl font-bold text-text flex items-center gap-2">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 text-[#050505]">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden relative z-10 animate-in zoom-in-95 duration-200 border border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+          <h2 className="text-xl font-bold flex items-center gap-2">
             <Calendar className="text-primary" size={24} />
             {event ? 'Edit Event' : 'Create New Event'}
           </h2>
-          <button onClick={onClose} className="text-text-secondary hover:bg-bg p-1.5 rounded-full transition-colors active:scale-90">
+          <button onClick={onClose} className="text-gray-400 hover:bg-gray-200 p-1.5 rounded-full transition-colors active:scale-90">
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[80vh] overflow-y-auto no-scrollbar">
-          {/* Image Preview & Upload Section */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto no-scrollbar">
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] flex items-center gap-1.5 ml-1">
+            <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5">
               <ImageIcon size={14} /> Event Cover Photo
             </label>
-            <div className="relative group rounded-xl overflow-hidden border border-border bg-bg aspect-video shadow-inner">
+            <div className="relative group rounded-lg overflow-hidden border border-gray-200 bg-gray-100 aspect-video">
               <img 
                 src={formData.image} 
                 alt="Event cover" 
                 className="w-full h-full object-cover transition-opacity group-hover:opacity-80"
               />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-bg/40 backdrop-blur-[2px]">
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
                 <button 
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="bg-surface border border-border text-text px-4 py-2 rounded-lg font-bold shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform active:scale-95"
+                  className="bg-white text-gray-800 px-4 py-2 rounded-lg font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform"
                 >
                   <Upload size={18} /> Change Photo
                 </button>
               </div>
             </div>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileSelect} 
-              accept="image/*" 
-              className="hidden" 
-            />
-            <div className="flex gap-2">
-               <input
-                type="url"
-                value={formData.image.startsWith('data:') ? '' : formData.image}
-                onChange={e => setFormData({ ...formData, image: e.target.value })}
-                className="flex-1 bg-bg border border-border rounded-xl px-4 py-2 text-xs text-text focus:outline-none focus:border-primary transition-all"
-                placeholder="Or paste image URL here..."
-              />
-              <button 
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="bg-bg text-text-secondary px-3 py-2 rounded-xl text-xs font-bold hover:text-text border border-border transition-colors active:scale-95"
-              >
-                Upload Device
-              </button>
-            </div>
+            <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept="image/*" className="hidden" />
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] flex items-center gap-1.5 ml-1">
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5">
               <Type size={14} /> Event Title
             </label>
             <input
@@ -121,13 +98,13 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSuccess }) =>
               required
               value={formData.title}
               onChange={e => setFormData({ ...formData, title: e.target.value })}
-              className="w-full bg-bg border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-all text-text"
-              placeholder="e.g. Monthly Club Social"
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary transition-all"
+              placeholder="e.g. Monthly Social Meetup"
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] flex items-center gap-1.5 ml-1">
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5">
               <AlignLeft size={14} /> Description
             </label>
             <textarea
@@ -135,14 +112,14 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSuccess }) =>
               rows={3}
               value={formData.description}
               onChange={e => setFormData({ ...formData, description: e.target.value })}
-              className="w-full bg-bg border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition-all text-text resize-none"
-              placeholder="Tell members more about the event..."
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary transition-all resize-none"
+              placeholder="Event details..."
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] flex items-center gap-1.5 ml-1">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5">
                 <Calendar size={14} /> Date
               </label>
               <input
@@ -150,11 +127,11 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSuccess }) =>
                 required
                 value={formData.date}
                 onChange={e => setFormData({ ...formData, date: e.target.value })}
-                className="w-full bg-bg border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-text"
+                className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary"
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] flex items-center gap-1.5 ml-1">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5">
                 <Clock size={14} /> Time
               </label>
               <input
@@ -162,14 +139,14 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSuccess }) =>
                 required
                 value={formData.time}
                 onChange={e => setFormData({ ...formData, time: e.target.value })}
-                className="w-full bg-bg border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-text"
-                placeholder="07:00 PM"
+                className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary"
+                placeholder="07:30 AM"
               />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] flex items-center gap-1.5 ml-1">
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5">
               <MapPin size={14} /> Location
             </label>
             <input
@@ -177,8 +154,8 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSuccess }) =>
               required
               value={formData.location}
               onChange={e => setFormData({ ...formData, location: e.target.value })}
-              className="w-full bg-bg border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-primary text-text"
-              placeholder="e.g. City Park, Room 402"
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary"
+              placeholder="Event venue..."
             />
           </div>
 
@@ -186,16 +163,16 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose, onSuccess }) =>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3.5 rounded-xl font-bold text-text-secondary bg-bg border border-border hover:bg-surface transition-all active:scale-95"
+              className="flex-1 px-4 py-3 rounded-lg font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-3.5 rounded-xl font-bold text-bg bg-primary hover:bg-primary-hover shadow-xl shadow-primary/20 transition-all disabled:opacity-50 flex items-center justify-center active:scale-95"
+              className="flex-1 px-4 py-3 rounded-lg font-bold text-white bg-primary hover:bg-primary-hover shadow-lg transition-all disabled:opacity-50 flex items-center justify-center"
             >
-              {loading ? <Loader2 className="animate-spin" /> : (event ? 'Update Event' : 'Create Event')}
+              {loading ? <Loader2 className="animate-spin" /> : (event ? 'Update' : 'Create')}
             </button>
           </div>
         </form>

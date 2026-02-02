@@ -70,34 +70,34 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
       const polished = await polishText(content);
       setContent(polished);
     } catch (e) {
-      alert("AI text polish failed. Please try again.");
+      alert("AI লেখা উন্নত করতে পারেনি। আবার চেষ্টা করুন।");
     } finally {
       setIsPolishing(false);
     }
   };
 
   return (
-    <div className="bg-surface p-4 shadow-lg mb-4 border-b border-border md:rounded-xl md:border transition-all">
+    <div className="bg-white p-4 shadow-sm mb-4 border-b border-gray-200 md:rounded-lg md:border transition-all">
       <div className="flex items-start gap-3">
         <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" className="mt-1" />
         
         <div className="flex-1 flex flex-col gap-3">
-          <div className="flex-1 bg-bg border border-border rounded-xl flex items-end px-3 py-2 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+          <div className="flex-1 bg-gray-100 border border-gray-200 rounded-xl flex items-end px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 focus-within:bg-white focus-within:border-primary transition-all">
             <textarea
               ref={textareaRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder={`What's on your mind?`}
+              placeholder={`${currentUser.name.split(' ')[0]}, আপনার মনে কী আছে?`}
               rows={1}
-              className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[16px] text-text py-1.5 max-h-40 no-scrollbar overflow-y-auto"
+              className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[17px] text-[#1c1e21] font-normal py-1.5 max-h-60 no-scrollbar overflow-y-auto leading-relaxed"
               disabled={isPosting}
             />
             
-            <div className="flex items-center gap-1.5 mb-1 ml-2 border-l border-border pl-2">
+            <div className="flex items-center gap-1.5 mb-1 ml-2 border-l border-gray-200 pl-2">
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2 text-secondary hover:bg-surface active:scale-90 rounded-full transition-all"
-                title="Add Photo"
+                className="p-2 text-gray-500 hover:bg-gray-200 active:scale-90 rounded-full transition-all"
+                title="ছবি যোগ করুন"
               >
                  <ImageIcon size={20} />
               </button>
@@ -106,9 +106,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
                 onClick={handlePolish}
                 disabled={isPolishing || !content || isPosting}
                 className={`p-2 rounded-full transition-all active:scale-90 ${
-                  isPolishing ? 'text-text-secondary' : 'text-primary hover:bg-surface'
+                  isPolishing ? 'text-gray-400' : 'text-primary hover:bg-gray-200'
                 }`}
-                title="AI Polish"
+                title="AI দিয়ে লেখা উন্নত করুন"
               >
                 {isPolishing ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
               </button>
@@ -116,11 +116,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
           </div>
 
           {selectedImage && (
-            <div className="relative rounded-lg overflow-hidden border border-border max-w-[240px] group shadow-md">
+            <div className="relative rounded-lg overflow-hidden border border-gray-200 max-w-[240px] group shadow-sm">
                <img src={selectedImage} alt="Selected preview" className="w-full h-auto max-h-48 object-cover" />
                <button 
                  onClick={() => setSelectedImage(null)}
-                 className="absolute top-2 right-2 bg-bg/80 text-text p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
+                 className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity active:opacity-100"
                >
                  <X size={16} />
                </button>
@@ -131,8 +131,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ currentUser }) => {
         <button
           onClick={handlePost}
           disabled={(!content.trim() && !selectedImage) || isPosting}
-          className="bg-primary text-white p-3 rounded-full hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 active:scale-95 self-end"
-          title="Post Now"
+          className="bg-primary text-white p-3 rounded-full hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md active:scale-95 self-end flex items-center justify-center"
         >
           {isPosting ? <Loader2 size={22} className="animate-spin" /> : <Send size={22} className="ml-0.5" />}
         </button>

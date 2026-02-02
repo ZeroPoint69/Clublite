@@ -43,38 +43,38 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-bg/90 backdrop-blur-sm p-4">
-      <div className="bg-surface rounded-xl shadow-2xl w-full max-w-[432px] overflow-hidden border border-border relative animate-in zoom-in-95 duration-200">
-        <div className="px-6 py-4 border-b border-border flex justify-between items-start">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/80 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-[432px] overflow-hidden border border-gray-300 relative animate-in zoom-in-95 duration-200">
+        <div className="px-4 py-3 border-b border-gray-300 flex justify-between items-start bg-white">
           <div>
-            <h2 className="text-3xl font-bold text-text">Sign Up</h2>
-            <p className="text-text-secondary text-[15px]">It's quick and easy.</p>
+            <h2 className="text-3xl font-bold text-[#1c1e21]">Sign Up</h2>
+            <p className="text-[#606770] text-[15px]">It's quick and easy.</p>
           </div>
-          <button onClick={onClose} className="text-text-secondary hover:bg-bg active:scale-90 rounded p-1 transition-all">
+          <button onClick={onClose} className="text-[#606770] hover:bg-gray-100 active:scale-90 rounded p-1 transition-all">
             <X size={24} />
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-4">
           {error && (
-            <div className="mb-4 p-3 bg-red-900/30 border border-red-800 text-red-200 text-sm rounded-md text-center">
+            <div className="mb-3 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-md">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleRegister} className="space-y-4">
-            <div className="flex gap-4">
+          <form onSubmit={handleRegister} className="space-y-3">
+            <div className="flex gap-3">
               <input
                 type="text"
                 placeholder="First name"
-                className="w-1/2 bg-bg border border-border rounded-lg p-3 text-[16px] text-text focus:outline-none focus:border-primary"
+                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] text-[16px] focus:outline-none focus:border-primary"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
               />
               <input
                 type="text"
                 placeholder="Surname"
-                className="w-1/2 bg-bg border border-border rounded-lg p-3 text-[16px] text-text focus:outline-none focus:border-primary"
+                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] text-[16px] focus:outline-none focus:border-primary"
                 value={surname}
                 onChange={(e) => setSurname(e.target.value)}
               />
@@ -83,7 +83,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
             <input
               type="email"
               placeholder="Mobile number or email address"
-              className="w-full bg-bg border border-border rounded-lg p-3 text-[16px] text-text focus:outline-none focus:border-primary"
+              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] text-[16px] focus:outline-none focus:border-primary"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -91,7 +91,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
             <input
               type="password"
               placeholder="New password"
-              className="w-full bg-bg border border-border rounded-lg p-3 text-[16px] text-text focus:outline-none focus:border-primary"
+              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] text-[16px] focus:outline-none focus:border-primary"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -100,22 +100,22 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
               <input
                 type="text"
                 placeholder="Secret Code (Optional)"
-                className="w-full bg-bg border border-border rounded-lg p-3 pl-10 text-[16px] text-text focus:outline-none focus:border-primary"
+                className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] pl-10 text-[16px] focus:outline-none focus:border-primary"
                 value={secretCode}
                 onChange={(e) => setSecretCode(e.target.value)}
               />
-              <ShieldCheck size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
+              <ShieldCheck size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
 
-            <p className="text-[11px] text-text-secondary my-3 leading-4 text-center">
+            <p className="text-[11px] text-[#777] my-3 leading-4">
               By clicking Sign Up, you agree to our Terms, Privacy Policy and Cookies Policy.
             </p>
 
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-5">
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-secondary hover:bg-secondary-hover active:scale-[0.98] text-bg font-bold text-lg px-12 py-3 rounded-lg shadow-lg transition-all min-w-[194px] flex justify-center items-center h-[52px]"
+                className="bg-[#00a400] hover:bg-[#008f00] active:scale-[0.98] text-white font-bold text-lg px-12 py-1.5 rounded-[6px] shadow-sm transition-all min-w-[194px] flex justify-center items-center h-[45px]"
               >
                 {loading ? <Loader2 size={24} className="animate-spin" /> : 'Sign Up'}
               </button>
