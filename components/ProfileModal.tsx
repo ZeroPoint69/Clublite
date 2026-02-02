@@ -66,7 +66,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-200 animate-in zoom-in-95 duration-200">
         <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-text">Edit Profile</h2>
+          <h2 className="text-xl font-bold text-text">Account Settings</h2>
           <button onClick={onClose} className="text-text-secondary hover:bg-gray-100 rounded-full p-1.5 transition-colors">
             <X size={20} />
           </button>
@@ -106,7 +106,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
 
           <form onSubmit={handleSave} className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-text mb-1.5">Display Name</label>
+              <label className="block text-sm font-bold text-text mb-1.5">Your Name</label>
               <input
                 type="text"
                 value={name}
@@ -117,49 +117,40 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
               />
             </div>
 
-            <button 
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-text font-semibold py-2 rounded-lg transition-colors text-sm"
+            <button
+              type="submit"
+              disabled={loading || success || loggingOut}
+              className={`w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-white transition-all shadow-md ${
+                success ? 'bg-green-500 shadow-green-200' : 'bg-primary hover:bg-primary-hover shadow-primary/20'
+              }`}
             >
-              <Upload size={16} /> Upload from Device
+              {loading ? (
+                <Loader2 size={20} className="animate-spin" />
+              ) : success ? (
+                <><Check size={20} /> Changes Saved!</>
+              ) : (
+                'Save Changes'
+              )}
             </button>
 
-            <div className="pt-4 flex flex-col gap-3">
+            <div className="border-t border-gray-100 my-4 pt-4">
               <button
-                type="submit"
-                disabled={loading || success || loggingOut}
-                className={`w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-white transition-all shadow-md ${
-                  success ? 'bg-green-500 shadow-green-200' : 'bg-primary hover:bg-primary-hover shadow-primary/20'
-                }`}
+                type="button"
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors border border-red-200 shadow-sm"
               >
-                {loading ? (
-                  <Loader2 size={20} className="animate-spin" />
-                ) : success ? (
-                  <><Check size={20} /> Saved!</>
-                ) : (
-                  'Save Changes'
-                )}
+                {loggingOut ? <Loader2 size={18} className="animate-spin" /> : <><LogOut size={18} /> Sign Out of ClubLite</>}
               </button>
-              
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="flex-1 px-4 py-2 rounded-lg font-bold text-text-secondary hover:bg-gray-100 transition-colors text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  disabled={loggingOut}
-                  className="flex-1 flex justify-center items-center gap-2 px-4 py-2 rounded-lg font-bold text-red-600 hover:bg-red-50 transition-colors border border-red-100 text-sm"
-                >
-                  {loggingOut ? <Loader2 size={16} className="animate-spin" /> : <><LogOut size={16} /> Log Out</>}
-                </button>
-              </div>
             </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full text-center text-text-secondary text-sm font-medium hover:underline py-2"
+            >
+              Back to Club
+            </button>
           </form>
         </div>
       </div>

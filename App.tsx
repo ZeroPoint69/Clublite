@@ -8,7 +8,7 @@ import Feed from './components/Feed';
 import Navbar from './components/Navbar';
 import ProfileModal from './components/ProfileModal';
 import MembersList from './components/MembersList';
-import Avatar from './Avatar';
+import Avatar from './components/Avatar';
 import { Loader2, Home, Users } from 'lucide-react';
 
 const App: React.FC = () => {
