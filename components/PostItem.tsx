@@ -4,7 +4,7 @@ import { User, Post, Comment } from '../types';
 import { likePost, deletePost, addComment, getComments, deleteComment, subscribeToComments } from '../services/dataService';
 import Avatar from './Avatar';
 import ConfirmDialog from './ConfirmDialog';
-import { ThumbsUp, MessageCircle, Trash2, Send, Loader2, MoreHorizontal } from 'lucide-react';
+import { ThumbsUp, MessageCircle, Trash2, Send, Loader2, MoreHorizontal, ShieldCheck } from 'lucide-react';
 
 interface PostItemProps {
   post: Post;
@@ -125,9 +125,17 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
         <div className="flex gap-3">
           <Avatar src={post.userAvatar} alt={post.userName} />
           <div>
-            <h3 className="font-semibold text-text text-base leading-tight hover:underline cursor-pointer">
-              {post.userName}
-            </h3>
+            <div className="flex items-center gap-1">
+              <h3 className="font-semibold text-text text-base leading-tight hover:underline cursor-pointer">
+                {post.userName}
+              </h3>
+              {/* Optional: We could check if post author is admin from post object, 
+                  but data model doesn't store role in post for now. 
+                  Assume ifuserName ends with Admin (from seed) or just use for UI consistency */}
+              {post.userName.toLowerCase().includes('admin') && (
+                <ShieldCheck size={14} className="text-primary fill-primary/10" />
+              )}
+            </div>
             <span className="text-xs text-text-secondary hover:underline cursor-pointer">
               {formatDate(post.timestamp)}
             </span>
@@ -153,7 +161,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
                   <Trash2 size={16} /> Delete Post
                 </button>
               ) : (
-                <div className="px-4 py-2 text-sm text-text-secondary italic">
+                <div className="px-4 py-2 text-sm text-text-secondary italic text-center">
                   No actions available
                 </div>
               )}
@@ -221,7 +229,12 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
                     <Avatar src={comment.userAvatar} alt={comment.userName} size="sm" />
                     <div className="flex-1">
                         <div className="bg-gray-100 rounded-2xl px-3 py-2 inline-block">
-                            <span className="font-semibold text-sm block text-text">{comment.userName}</span>
+                            <div className="flex items-center gap-1">
+                              <span className="font-semibold text-sm block text-text">{comment.userName}</span>
+                              {comment.userName.toLowerCase().includes('admin') && (
+                                <ShieldCheck size={12} className="text-primary fill-primary/10" />
+                              )}
+                            </div>
                             <span className="text-sm text-text">{comment.content}</span>
                         </div>
                         <div className="flex gap-4 text-xs text-text-secondary ml-3 mt-1">
@@ -264,7 +277,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
         </div>
       )}
 
-      {/* Modern Confirmation Dialogs */}
       <ConfirmDialog 
         isOpen={confirmDeletePost}
         title="Delete Post?"

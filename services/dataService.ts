@@ -8,6 +8,7 @@ export const getMembers = async (): Promise<User[]> => {
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
+    .order('role', { ascending: true }) // Admins first
     .order('name', { ascending: true });
 
   if (error) {
@@ -21,6 +22,25 @@ export const getMembers = async (): Promise<User[]> => {
     avatar: row.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.name)}`,
     role: row.role as 'member' | 'admin'
   }));
+};
+
+export const removeMember = async (memberId: string): Promise<void> => {
+  // Note: This removes from profiles, but Supabase Auth user remains 
+  // unless handled by a Service Role / Edge Function.
+  // For this app, we remove their profile and all their data.
+  await supabase.from('comments').delete().eq('user_id', memberId);
+  await supabase.from('posts').delete().eq('user_id', memberId);
+  const { error } = await supabase.from('profiles').delete().eq('id', memberId);
+  if (error) console.error('Error removing member profile:', error);
+};
+
+export const updateMemberRole = async (memberId: string, newRole: 'admin' | 'member'): Promise<void> => {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ role: newRole })
+    .eq('id', memberId);
+  
+  if (error) console.error('Error updating member role:', error);
 };
 
 // --- Notifications ---
@@ -255,3 +275,11 @@ export const subscribeToComments = (postId: string, onUpdate: () => void) => {
     .subscribe();
   return () => supabase.removeChannel(channel);
 }
+
+export const subscribeToMembers = (onUpdate: () => void) => {
+  const channel = supabase
+    .channel('public:profiles')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => onUpdate())
+    .subscribe();
+  return () => supabase.removeChannel(channel);
+};
