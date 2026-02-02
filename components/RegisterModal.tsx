@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, ShieldCheck } from 'lucide-react';
 import { signUp } from '../services/authService';
 
 interface RegisterModalProps {
@@ -12,6 +13,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
   const [surname, setSurname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [secretCode, setSecretCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,13 +22,13 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
     setError('');
     
     if (!firstName || !surname || !email || !password) {
-      setError('Please fill in all fields.');
+      setError('Please fill in all required fields.');
       return;
     }
 
     setLoading(true);
     try {
-      const { data, error } = await signUp(email, password, firstName, surname);
+      const { data, error } = await signUp(email, password, firstName, surname, secretCode);
       
       if (error) {
         setError(error.message);
@@ -100,6 +102,17 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Secret Code (Optional)"
+                className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] pl-10 placeholder-[#8d949e] text-[15px] focus:outline-none focus:border-primary"
+                value={secretCode}
+                onChange={(e) => setSecretCode(e.target.value)}
+              />
+              <ShieldCheck size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            </div>
 
             <p className="text-[11px] text-[#777] my-3 leading-4">
               By clicking Sign Up, you agree to our Terms, Privacy Policy and Cookies Policy. You may receive SMS notifications from us and can opt out at any time.

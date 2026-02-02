@@ -2,9 +2,12 @@
 import { supabase } from './supabaseClient';
 import { User } from '../types';
 
-export const signUp = async (email: string, password: string, firstName: string, surname: string) => {
+export const signUp = async (email: string, password: string, firstName: string, surname: string, secretCode?: string) => {
   const fullName = `${firstName} ${surname}`;
   const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=random&color=fff`;
+  
+  // Logic to determine role based on secret code
+  const role = secretCode === 'JOYRA2026' ? 'admin' : 'member';
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -13,7 +16,7 @@ export const signUp = async (email: string, password: string, firstName: string,
       data: {
         full_name: fullName,
         avatar_url: avatar,
-        role: 'member',
+        role: role,
       },
     },
   });
@@ -24,7 +27,7 @@ export const signUp = async (email: string, password: string, firstName: string,
       id: data.user.id,
       name: fullName,
       avatar: avatar,
-      role: 'member'
+      role: role
     });
   }
 
