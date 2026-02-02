@@ -6,7 +6,7 @@ import { mapSessionUser, signOut } from './services/authService';
 import Login from './components/Login';
 import Feed from './components/Feed';
 import Navbar from './components/Navbar';
-// Added missing imports for icons and Avatar component
+import ProfileModal from './components/ProfileModal';
 import Avatar from './components/Avatar';
 import { Loader2, Home, Users } from 'lucide-react';
 
@@ -14,6 +14,14 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [view, setView] = useState<AppView>(AppView.LOGIN);
   const [loading, setLoading] = useState(true);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+
+  const refreshUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      setUser(mapSessionUser(session.user));
+    }
+  };
 
   useEffect(() => {
     // Check initial session
@@ -71,13 +79,24 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
-      <Navbar currentUser={user} onLogout={handleLogout} />
+      <Navbar 
+        currentUser={user} 
+        onLogout={handleLogout} 
+        onProfileClick={() => setShowProfileModal(true)} 
+      />
+      
       <main className="flex-1 container mx-auto px-0 sm:px-4 max-w-4xl lg:grid lg:grid-cols-12 gap-6">
         {/* Left Sidebar (Desktop Only) */}
         <div className="hidden lg:block col-span-3 py-6 sticky top-14 h-[calc(100vh-56px)]">
-           <div className="flex items-center gap-3 p-2 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors mb-2">
+           <div 
+             className="flex items-center gap-3 p-2 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors mb-2"
+             onClick={() => setShowProfileModal(true)}
+           >
               <Avatar src={user.avatar} alt={user.name} size="sm" />
-              <span className="font-bold text-sm">{user.name}</span>
+              <div className="flex flex-col">
+                <span className="font-bold text-sm leading-tight">{user.name}</span>
+                <span className="text-[10px] text-text-secondary uppercase font-bold">Edit Profile</span>
+              </div>
            </div>
            <nav className="space-y-1">
               <button className="w-full text-left p-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-3 text-sm font-semibold">
@@ -110,6 +129,14 @@ const App: React.FC = () => {
            </div>
         </div>
       </main>
+
+      {showProfileModal && (
+        <ProfileModal 
+          user={user} 
+          onClose={() => setShowProfileModal(false)} 
+          onUpdate={refreshUser}
+        />
+      )}
     </div>
   );
 };

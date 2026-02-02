@@ -7,9 +7,10 @@ import { LogOut, Home, Users, Bell, Search, Menu } from 'lucide-react';
 interface NavbarProps {
   currentUser: User;
   onLogout: () => void;
+  onProfileClick: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout, onProfileClick }) => {
   return (
     <>
       {/* Top Desktop Navbar */}
@@ -47,11 +48,11 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
           </div>
           
           <div className="flex items-center gap-2 ml-2 pl-2 md:border-l border-gray-200">
-             <div className="hidden lg:flex flex-col items-end">
+             <div className="hidden lg:flex flex-col items-end cursor-pointer" onClick={onProfileClick}>
                   <span className="text-sm font-bold text-text leading-none">{currentUser.name}</span>
                   <span className="text-[10px] text-text-secondary uppercase font-black tracking-widest">{currentUser.role}</span>
              </div>
-             <div className="cursor-pointer hover:opacity-80 transition-opacity">
+             <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={onProfileClick}>
                <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" />
              </div>
              <button 
@@ -75,9 +76,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
           <Users size={20} />
           <span className="text-[10px] font-medium">Club</span>
         </button>
-        <button className="flex-1 flex flex-col items-center gap-0.5 text-text-secondary">
-          <Bell size={20} />
-          <span className="text-[10px] font-medium">Alerts</span>
+        <button className="flex-1 flex flex-col items-center gap-0.5 text-text-secondary" onClick={onProfileClick}>
+          <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Profile</span>
         </button>
         <button className="flex-1 flex flex-col items-center gap-0.5 text-text-secondary" onClick={onLogout}>
           <LogOut size={20} />

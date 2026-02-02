@@ -1,3 +1,4 @@
+
 import { supabase } from './supabaseClient';
 import { User } from '../types';
 
@@ -32,6 +33,16 @@ export const signIn = async (email: string, password: string) => {
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
   return { error };
+};
+
+export const updateProfile = async (updates: { name?: string; avatar?: string }) => {
+  const { data, error } = await supabase.auth.updateUser({
+    data: {
+      full_name: updates.name,
+      avatar_url: updates.avatar,
+    }
+  });
+  return { data, error };
 };
 
 export const mapSessionUser = (sessionUser: any): User | null => {
