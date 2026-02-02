@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { X, Loader2, Camera, RefreshCw, Check } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { X, Loader2, Camera, RefreshCw, Check, Upload } from 'lucide-react';
 import { User } from '../types';
 import { updateProfile } from '../services/authService';
 import Avatar from './Avatar';
@@ -16,10 +16,22 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
   const [avatar, setAvatar] = useState(user.avatar);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleRandomize = () => {
     const newAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=512`;
     setAvatar(newAvatar);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatar(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -57,9 +69,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/10 group-hover:border-primary/30 transition-all">
                 <img src={avatar} alt="Profile Preview" className="w-full h-full object-cover" />
               </div>
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 rounded-full transition-opacity pointer-events-none">
+              <button 
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 rounded-full transition-opacity cursor-pointer"
+              >
                 <Camera size={24} className="text-white" />
-              </div>
+              </button>
               <button 
                 type="button"
                 onClick={handleRandomize}
@@ -70,6 +86,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
               </button>
             </div>
             <p className="mt-2 text-xs font-medium text-text-secondary uppercase tracking-widest">Profile Picture</p>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileSelect} 
+              accept="image/*" 
+              className="hidden" 
+            />
           </div>
 
           <div className="space-y-4">
@@ -84,18 +107,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
                 required
               />
             </div>
-            
-            <div>
-              <label className="block text-sm font-bold text-text mb-1.5">Avatar URL</label>
-              <input
-                type="text"
-                value={avatar}
-                onChange={(e) => setAvatar(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-mono"
-                placeholder="https://example.com/photo.jpg"
-              />
-              <p className="text-[10px] text-text-secondary mt-1.5">Paste a link to any image or use the randomize button above.</p>
-            </div>
+
+            <button 
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-text font-semibold py-2 rounded-lg transition-colors text-sm"
+            >
+              <Upload size={16} /> Upload from Device
+            </button>
           </div>
 
           <div className="mt-8 flex gap-3">

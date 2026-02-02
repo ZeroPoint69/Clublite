@@ -24,35 +24,3 @@ export const polishText = async (text: string): Promise<string> => {
     throw error;
   }
 };
-
-/**
- * Uses Gemini 2.5 Flash Image to generate a custom image based on a prompt.
- * Returns a base64 data URL.
- */
-export const generateClubImage = async (prompt: string): Promise<string> => {
-  const ai = getAI();
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
-      contents: {
-        parts: [{ text: `A high-quality, professional photo for a club social media post showing: ${prompt}. The style should be modern, vibrant, and welcoming.` }]
-      },
-      config: {
-        imageConfig: {
-          aspectRatio: "16:9"
-        }
-      }
-    });
-
-    // Find the image part in the response
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData) {
-        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-      }
-    }
-    throw new Error("No image data returned from Gemini");
-  } catch (error) {
-    console.error("Gemini image generation error:", error);
-    throw error;
-  }
-};
