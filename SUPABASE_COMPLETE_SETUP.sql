@@ -1,10 +1,16 @@
 
 -- ==========================================================
--- CLUB LITE - PRODUCTION DATABASE SETUP (SECURE)
+-- CLUB LITE - PRODUCTION DATABASE RESET & SETUP (ROBUST)
 -- ==========================================================
 
--- 1. Create the 'profiles' table with strict auth reference
-CREATE TABLE IF NOT EXISTS public.profiles (
+-- 1. Clean up existing objects to ensure type consistency
+DROP TABLE IF EXISTS public.notifications CASCADE;
+DROP TABLE IF EXISTS public.comments CASCADE;
+DROP TABLE IF EXISTS public.posts CASCADE;
+DROP TABLE IF EXISTS public.profiles CASCADE;
+
+-- 2. Create the 'profiles' table with strict UUID auth reference
+CREATE TABLE public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE, 
     name TEXT NOT NULL,
     avatar TEXT,
@@ -12,8 +18,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 2. Create the 'posts' table
-CREATE TABLE IF NOT EXISTS public.posts (
+-- 3. Create the 'posts' table
+CREATE TABLE public.posts (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     user_name TEXT NOT NULL,
@@ -26,8 +32,8 @@ CREATE TABLE IF NOT EXISTS public.posts (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 3. Create the 'comments' table
-CREATE TABLE IF NOT EXISTS public.comments (
+-- 4. Create the 'comments' table
+CREATE TABLE public.comments (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     post_id UUID NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -38,8 +44,8 @@ CREATE TABLE IF NOT EXISTS public.comments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Create the 'notifications' table
-CREATE TABLE IF NOT EXISTS public.notifications (
+-- 5. Create the 'notifications' table
+CREATE TABLE public.notifications (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     actor_id UUID NOT NULL,
@@ -53,25 +59,19 @@ CREATE TABLE IF NOT EXISTS public.notifications (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 5. Enable Realtime
+-- 6. Enable Realtime
 BEGIN;
   DROP PUBLICATION IF EXISTS supabase_realtime;
   CREATE PUBLICATION supabase_realtime FOR TABLE public.posts, public.comments, public.notifications, public.profiles;
 COMMIT;
 
--- 6. RLS Policies
+-- 7. RLS Policies
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies
-DROP POLICY IF EXISTS "Enable all for public on profiles" ON public.profiles;
-DROP POLICY IF EXISTS "Enable all access for public on posts" ON public.posts;
-DROP POLICY IF EXISTS "Enable all access for public on comments" ON public.comments;
-DROP POLICY IF EXISTS "Enable all access for public on notifications" ON public.notifications;
-
--- Create production policies (allowing authenticated access)
+-- Create production policies (Safe for UUID)
 CREATE POLICY "Public profiles are viewable by everyone" ON public.profiles FOR SELECT USING (true);
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Enable insert for authenticated users only" ON public.profiles FOR INSERT WITH CHECK (auth.role() = 'authenticated');
