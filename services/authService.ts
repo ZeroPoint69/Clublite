@@ -4,7 +4,6 @@ import { User } from '../types';
 
 export const signUp = async (email: string, password: string, firstName: string, surname: string) => {
   const fullName = `${firstName} ${surname}`;
-  // Generate a colorful avatar based on initials
   const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=random&color=fff`;
 
   const { data, error } = await supabase.auth.signUp({
@@ -14,10 +13,20 @@ export const signUp = async (email: string, password: string, firstName: string,
       data: {
         full_name: fullName,
         avatar_url: avatar,
-        role: 'member', // Default role
+        role: 'member',
       },
     },
   });
+
+  if (!error && data.user) {
+    // Insert into public profiles table
+    await supabase.from('profiles').insert({
+      id: data.user.id,
+      name: fullName,
+      avatar: avatar,
+      role: 'member'
+    });
+  }
 
   return { data, error };
 };
@@ -42,6 +51,14 @@ export const updateProfile = async (updates: { name?: string; avatar?: string })
       avatar_url: updates.avatar,
     }
   });
+
+  if (!error && data.user) {
+    await supabase.from('profiles').update({
+      name: updates.name,
+      avatar: updates.avatar
+    }).eq('id', data.user.id);
+  }
+
   return { data, error };
 };
 

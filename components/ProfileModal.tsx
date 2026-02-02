@@ -1,8 +1,8 @@
 
 import React, { useState, useRef } from 'react';
-import { X, Loader2, Camera, RefreshCw, Check, Upload } from 'lucide-react';
+import { X, Loader2, Camera, RefreshCw, Check, Upload, LogOut } from 'lucide-react';
 import { User } from '../types';
-import { updateProfile } from '../services/authService';
+import { updateProfile, signOut } from '../services/authService';
 import Avatar from './Avatar';
 
 interface ProfileModalProps {
@@ -16,6 +16,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
   const [avatar, setAvatar] = useState(user.avatar);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleRandomize = () => {
@@ -53,6 +54,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
     }
   };
 
+  const handleLogout = async () => {
+    if (window.confirm("Are you sure you want to log out?")) {
+      setLoggingOut(true);
+      await signOut();
+      onClose();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-200 animate-in zoom-in-95 duration-200">
@@ -63,7 +72,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
           </button>
         </div>
 
-        <form onSubmit={handleSave} className="p-6">
+        <div className="p-6">
           <div className="flex flex-col items-center mb-8">
             <div className="relative group">
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/10 group-hover:border-primary/30 transition-all">
@@ -95,7 +104,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
             />
           </div>
 
-          <div className="space-y-4">
+          <form onSubmit={handleSave} className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-text mb-1.5">Display Name</label>
               <input
@@ -115,33 +124,44 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
             >
               <Upload size={16} /> Upload from Device
             </button>
-          </div>
 
-          <div className="mt-8 flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2.5 rounded-lg font-bold text-text-secondary hover:bg-gray-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading || success}
-              className={`flex-[2] flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-white transition-all shadow-md ${
-                success ? 'bg-green-500 shadow-green-200' : 'bg-primary hover:bg-primary-hover shadow-primary/20'
-              }`}
-            >
-              {loading ? (
-                <Loader2 size={20} className="animate-spin" />
-              ) : success ? (
-                <><Check size={20} /> Saved!</>
-              ) : (
-                'Save Changes'
-              )}
-            </button>
-          </div>
-        </form>
+            <div className="pt-4 flex flex-col gap-3">
+              <button
+                type="submit"
+                disabled={loading || success || loggingOut}
+                className={`w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-white transition-all shadow-md ${
+                  success ? 'bg-green-500 shadow-green-200' : 'bg-primary hover:bg-primary-hover shadow-primary/20'
+                }`}
+              >
+                {loading ? (
+                  <Loader2 size={20} className="animate-spin" />
+                ) : success ? (
+                  <><Check size={20} /> Saved!</>
+                ) : (
+                  'Save Changes'
+                )}
+              </button>
+              
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 px-4 py-2 rounded-lg font-bold text-text-secondary hover:bg-gray-100 transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  className="flex-1 flex justify-center items-center gap-2 px-4 py-2 rounded-lg font-bold text-red-600 hover:bg-red-50 transition-colors border border-red-100 text-sm"
+                >
+                  {loggingOut ? <Loader2 size={16} className="animate-spin" /> : <><LogOut size={16} /> Log Out</>}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

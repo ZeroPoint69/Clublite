@@ -7,12 +7,14 @@ import Login from './components/Login';
 import Feed from './components/Feed';
 import Navbar from './components/Navbar';
 import ProfileModal from './components/ProfileModal';
-import Avatar from './components/Avatar';
+import MembersList from './components/MembersList';
+import Avatar from './Avatar';
 import { Loader2, Home, Users } from 'lucide-react';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [view, setView] = useState<AppView>(AppView.LOGIN);
+  const [activeTab, setActiveTab] = useState<'feed' | 'members'>('feed');
   const [loading, setLoading] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
@@ -24,7 +26,6 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // Check initial session
     const initAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -41,7 +42,6 @@ const App: React.FC = () => {
 
     initAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser(mapSessionUser(session.user));
@@ -55,14 +55,6 @@ const App: React.FC = () => {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-    } catch (err) {
-      console.error("Logout error", err);
-    }
-  };
 
   if (loading) {
     return (
@@ -82,6 +74,7 @@ const App: React.FC = () => {
       <Navbar 
         currentUser={user} 
         onProfileClick={() => setShowProfileModal(true)} 
+        onTabChange={(tab) => setActiveTab(tab)}
       />
       
       <main className="flex-1 container mx-auto px-0 sm:px-4 max-w-4xl lg:grid lg:grid-cols-12 gap-6">
@@ -98,18 +91,28 @@ const App: React.FC = () => {
               </div>
            </div>
            <nav className="space-y-1">
-              <button className="w-full text-left p-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-3 text-sm font-semibold">
+              <button 
+                onClick={() => setActiveTab('feed')}
+                className={`w-full text-left p-2.5 rounded-lg transition-colors flex items-center gap-3 text-sm font-semibold ${activeTab === 'feed' ? 'bg-gray-200' : 'hover:bg-gray-200'}`}
+              >
                 <Home size={20} className="text-primary" /> Feed
               </button>
-              <button className="w-full text-left p-2.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-3 text-sm font-semibold">
+              <button 
+                onClick={() => setActiveTab('members')}
+                className={`w-full text-left p-2.5 rounded-lg transition-colors flex items-center gap-3 text-sm font-semibold ${activeTab === 'members' ? 'bg-gray-200' : 'hover:bg-gray-200'}`}
+              >
                 <Users size={20} className="text-blue-400" /> Members
               </button>
            </nav>
         </div>
 
-        {/* Feed Center Column */}
+        {/* Center Column */}
         <div className="col-span-12 lg:col-span-6">
-          <Feed currentUser={user} />
+          {activeTab === 'feed' ? (
+            <Feed currentUser={user} />
+          ) : (
+            <MembersList />
+          )}
         </div>
 
         {/* Right Sidebar (Desktop Only) */}

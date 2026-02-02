@@ -2,6 +2,27 @@
 import { supabase } from './supabaseClient';
 import { Post, Comment, User, Notification, NotificationType } from '../types';
 
+// --- Profiles / Members ---
+
+export const getMembers = async (): Promise<User[]> => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .order('name', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching members:', error);
+    return [];
+  }
+  
+  return data.map(row => ({
+    id: row.id,
+    name: row.name,
+    avatar: row.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.name)}`,
+    role: row.role as 'member' | 'admin'
+  }));
+};
+
 // --- Notifications ---
 
 const mapNotification = (row: any): Notification => ({
@@ -100,11 +121,6 @@ export const createPost = async (post: Post): Promise<void> => {
   const { error } = await supabase.from('posts').insert(dbPost);
   if (error) {
     console.error('Error creating post:', error);
-  } else {
-    // Notify everyone about a new post (in a small club context)
-    const { data: users } = await supabase.auth.admin.listUsers();
-    // Since we don't have listUsers on public anon client usually, we can skip or notify "all" 
-    // In a real app we'd have a users table. For now, let's just trigger interactions.
   }
 };
 

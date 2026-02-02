@@ -3,7 +3,16 @@
 -- CLUB LITE - SUPABASE COMPLETE SETUP SCRIPT
 -- ==========================================================
 
--- 1. Create the 'posts' table
+-- 1. Create the 'profiles' table to store public user info
+CREATE TABLE IF NOT EXISTS public.profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    avatar TEXT,
+    role TEXT DEFAULT 'member',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 2. Create the 'posts' table
 CREATE TABLE IF NOT EXISTS public.posts (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id TEXT NOT NULL,
@@ -17,7 +26,7 @@ CREATE TABLE IF NOT EXISTS public.posts (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 2. Create the 'comments' table
+-- 3. Create the 'comments' table
 CREATE TABLE IF NOT EXISTS public.comments (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     post_id UUID NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
@@ -29,14 +38,14 @@ CREATE TABLE IF NOT EXISTS public.comments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 3. Create the 'notifications' table
+-- 4. Create the 'notifications' table
 CREATE TABLE IF NOT EXISTS public.notifications (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id TEXT NOT NULL, -- Recipient
-    actor_id TEXT NOT NULL, -- Who triggered it
+    user_id TEXT NOT NULL,
+    actor_id TEXT NOT NULL,
     actor_name TEXT NOT NULL,
     actor_avatar TEXT,
-    type TEXT NOT NULL, -- LIKE, COMMENT, NEW_POST
+    type TEXT NOT NULL,
     post_id UUID REFERENCES public.posts(id) ON DELETE CASCADE,
     content TEXT,
     is_read BOOLEAN DEFAULT false,
@@ -44,16 +53,26 @@ CREATE TABLE IF NOT EXISTS public.notifications (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Enable Realtime
+-- 5. Enable Realtime
 BEGIN;
   DROP PUBLICATION IF EXISTS supabase_realtime;
-  CREATE PUBLICATION supabase_realtime FOR TABLE public.posts, public.comments, public.notifications;
+  CREATE PUBLICATION supabase_realtime FOR TABLE public.posts, public.comments, public.notifications, public.profiles;
 COMMIT;
 
--- 5. RLS Policies
+-- 6. RLS Policies
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Enable read for everyone on profiles" ON public.profiles;
+CREATE POLICY "Enable read for everyone on profiles" ON public.profiles FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Enable update for owners on profiles" ON public.profiles;
+CREATE POLICY "Enable update for owners on profiles" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Enable insert for authenticated users on profiles" ON public.profiles;
+CREATE POLICY "Enable insert for authenticated users on profiles" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
 DROP POLICY IF EXISTS "Enable all access for public on posts" ON public.posts;
 CREATE POLICY "Enable all access for public on posts" ON public.posts FOR ALL USING (true) WITH CHECK (true);

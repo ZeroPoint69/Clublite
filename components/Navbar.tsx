@@ -8,9 +8,10 @@ import { Home, Users, Bell, Search, Menu, Heart, MessageSquare, Plus } from 'luc
 interface NavbarProps {
   currentUser: User;
   onProfileClick: () => void;
+  onTabChange: (tab: 'feed' | 'members') => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChange }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -43,7 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick }) => {
     setShowNotifications(!showNotifications);
     if (!showNotifications && unreadCount > 0) {
       await markNotificationsAsRead(currentUser.id);
-      setTimeout(loadNotifications, 500); // Small delay to let DB update
+      setTimeout(loadNotifications, 500);
     }
   };
 
@@ -67,7 +68,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick }) => {
     <>
       <nav className="sticky top-0 z-50 bg-surface shadow-sm border-b border-gray-200 px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="text-2xl font-black text-primary tracking-tighter cursor-pointer">
+          <div className="text-2xl font-black text-primary tracking-tighter cursor-pointer" onClick={() => onTabChange('feed')}>
             club<span className="font-light">lite</span>
           </div>
           <div className="hidden lg:flex ml-2 relative">
@@ -82,24 +83,38 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 md:gap-4 lg:gap-8">
+        <div className="flex items-center gap-1 md:gap-4">
+          {/* Main Navigation Tabs */}
           <div className="hidden md:flex items-center gap-1">
-            <button className="p-3 text-primary border-b-4 border-primary rounded-none hover:bg-gray-50 transition-colors h-14" title="Home">
+            <button 
+              onClick={() => onTabChange('feed')}
+              className="p-3 text-primary border-b-4 border-primary rounded-none hover:bg-gray-50 transition-colors h-14" title="Home"
+            >
                  <Home size={24} strokeWidth={2.5} />
             </button>
-            <button className="p-3 text-text-secondary hover:bg-gray-100 rounded-lg transition-colors h-12" title="Members">
+            <button 
+              onClick={() => onTabChange('members')}
+              className="p-3 text-text-secondary hover:bg-gray-100 rounded-lg transition-colors h-12" title="Members"
+            >
                  <Users size={24} />
             </button>
-            
+            <button className="p-3 text-text-secondary hover:bg-gray-100 rounded-lg transition-colors h-12" title="Menu">
+                 <Menu size={24} />
+            </button>
+          </div>
+          
+          {/* Right Side Tools (Notifications + Profile) */}
+          <div className="flex items-center gap-2 pl-2 md:border-l border-gray-200">
+            {/* Notification Bell - Moved here next to profile */}
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={handleBellClick}
-                className={`p-3 rounded-lg transition-colors h-12 ${showNotifications ? 'bg-gray-100 text-primary' : 'text-text-secondary hover:bg-gray-100'}`} 
+                className={`p-2.5 rounded-full transition-colors ${showNotifications ? 'bg-gray-100 text-primary' : 'text-text-secondary hover:bg-gray-100'}`} 
                 title="Notifications"
               >
                  <Bell size={24} />
                  {unreadCount > 0 && (
-                   <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-surface">
+                   <span className="absolute top-1.5 right-1.5 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-surface">
                      {unreadCount}
                    </span>
                  )}
@@ -146,29 +161,29 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick }) => {
               )}
             </div>
 
-            <button className="p-3 text-text-secondary hover:bg-gray-100 rounded-lg transition-colors h-12" title="Menu">
-                 <Menu size={24} />
-            </button>
-          </div>
-          
-          <div className="flex items-center gap-2 ml-2 pl-2 md:border-l border-gray-200">
-             <div className="hidden lg:flex flex-col items-end cursor-pointer" onClick={onProfileClick}>
-                  <span className="text-sm font-bold text-text leading-none">{currentUser.name}</span>
-                  <span className="text-[10px] text-text-secondary uppercase font-black tracking-widest">{currentUser.role}</span>
-             </div>
-             <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={onProfileClick}>
+            <div className="hidden lg:flex flex-col items-end cursor-pointer ml-1" onClick={onProfileClick}>
+                <span className="text-sm font-bold text-text leading-none">{currentUser.name}</span>
+                <span className="text-[10px] text-text-secondary uppercase font-black tracking-widest">{currentUser.role}</span>
+            </div>
+            <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={onProfileClick}>
                <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" />
-             </div>
+            </div>
           </div>
         </div>
       </nav>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-surface border-t border-gray-200 flex justify-around items-center h-14 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-        <button className="flex-1 flex flex-col items-center gap-0.5 text-primary">
+        <button 
+          onClick={() => onTabChange('feed')}
+          className="flex-1 flex flex-col items-center gap-0.5 text-primary"
+        >
           <Home size={20} strokeWidth={2.5} />
           <span className="text-[10px] font-bold">Home</span>
         </button>
-        <button className="flex-1 flex flex-col items-center gap-0.5 text-text-secondary">
+        <button 
+          onClick={() => onTabChange('members')}
+          className="flex-1 flex flex-col items-center gap-0.5 text-text-secondary"
+        >
           <Users size={20} />
           <span className="text-[10px] font-medium">Club</span>
         </button>
