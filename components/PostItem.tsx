@@ -31,27 +31,20 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
-
     if (showComments) {
       setLoadingComments(true);
-      
       const fetchAndSubscribe = async () => {
           const data = await getComments(post.id);
           setComments(data);
           setLoadingComments(false);
-
           unsubscribe = subscribeToComments(post.id, async () => {
               const updated = await getComments(post.id);
               setComments(updated);
           });
       }
-
       fetchAndSubscribe();
     }
-
-    return () => {
-        if (unsubscribe) unsubscribe();
-    };
+    return () => { if (unsubscribe) unsubscribe(); };
   }, [showComments, post.id]);
 
   useEffect(() => {
@@ -60,12 +53,8 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
         setShowMenu(false);
       }
     };
-    if (showMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (showMenu) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMenu]);
 
   const handleLike = async () => {
@@ -90,7 +79,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
     e.preventDefault();
     if (!newComment.trim()) return;
     setSendingComment(true);
-
     const comment: Comment = {
       id: crypto.randomUUID(),
       postId: post.id,
@@ -100,7 +88,6 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
       content: newComment.trim(),
       timestamp: Date.now()
     };
-
     await addComment(comment, currentUser);
     setNewComment('');
     setSendingComment(false);
@@ -119,7 +106,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
   };
 
   return (
-    <div className="bg-surface shadow-sm mb-4 border-b border-gray-200 md:rounded-lg md:border">
+    <div className="bg-surface shadow-sm mb-4 border-b border-gray-200 md:rounded-lg md:border overflow-hidden">
       <div className="p-4 flex justify-between items-start">
         <div className="flex gap-3">
           <Avatar src={post.userAvatar} alt={post.userName} />
@@ -132,7 +119,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
                 <ShieldCheck size={14} className="text-primary fill-primary/10" />
               )}
             </div>
-            <span className="text-xs text-text-secondary hover:underline cursor-pointer">
+            <span className="text-xs text-text-secondary">
               {formatDate(post.timestamp)}
             </span>
           </div>
@@ -141,7 +128,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
         <div className="relative" ref={menuRef}>
           <button 
             onClick={() => setShowMenu(!showMenu)}
-            className="text-text-secondary hover:bg-gray-100 p-2 rounded-full transition-colors"
+            className="text-text-secondary hover:bg-gray-100 active:scale-90 p-2 rounded-full transition-all"
             title="More options"
           >
             <MoreHorizontal size={20} />
@@ -152,7 +139,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
               {canDeletePost ? (
                 <button 
                   onClick={() => { setShowMenu(false); setConfirmDeletePost(true); }}
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium"
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 active:bg-red-100 flex items-center gap-2 font-medium transition-colors"
                 >
                   <Trash2 size={16} /> Delete Post
                 </button>
@@ -186,7 +173,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
           <span>{post.likes.length > 0 ? post.likes.length : ''}</span>
         </div>
         <div 
-            className="hover:underline cursor-pointer"
+            className="hover:underline cursor-pointer active:opacity-60 transition-opacity"
             onClick={() => setShowComments(!showComments)}
         >
           {post.commentCount} comments
@@ -196,7 +183,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
       <div className="px-2 py-1 flex justify-between items-center">
         <button 
           onClick={handleLike}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md font-medium text-sm transition-colors ${
+          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md font-medium text-sm transition-all active:scale-95 ${
             isLiked ? 'text-primary' : 'text-text-secondary hover:bg-gray-100'
           }`}
         >
@@ -205,7 +192,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
         </button>
         <button 
           onClick={() => setShowComments(!showComments)}
-          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-md font-medium text-sm text-text-secondary hover:bg-gray-100 transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-md font-medium text-sm text-text-secondary hover:bg-gray-100 active:scale-95 transition-all"
         >
           <MessageCircle size={18} />
           Comment
@@ -238,7 +225,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
                             {(currentUser.role === 'admin' || currentUser.id === comment.userId) && (
                             <button 
                                 onClick={() => setCommentToDelete(comment.id)}
-                                className="font-medium hover:text-red-500 hover:underline"
+                                className="font-medium hover:text-red-500 hover:underline active:opacity-50 transition-all"
                             >
                                 Delete
                             </button>
@@ -264,7 +251,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, currentUser }) => {
                 <button 
                   type="submit"
                   disabled={!newComment.trim() || sendingComment}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-primary disabled:text-gray-400 p-1 hover:bg-gray-200 rounded-full transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-primary disabled:text-gray-400 p-1 hover:bg-gray-200 active:scale-90 rounded-full transition-all"
                 >
                     {sendingComment ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                 </button>

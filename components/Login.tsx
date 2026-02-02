@@ -26,9 +26,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       const { error } = await signIn(email, password);
       if (error) {
         setError("Invalid email or password");
-      } else {
-        // Success is handled by the onAuthStateChange in App.tsx, 
-        // but we can trigger a local callback if needed.
       }
     } catch (err) {
       setError("An unexpected error occurred");
@@ -41,7 +38,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     <div className="min-h-screen bg-[#f0f2f5] flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-[980px] flex flex-col md:flex-row items-center justify-between gap-10 md:gap-0 pb-20 md:pb-0">
         
-        {/* Left Side: Branding */}
         <div className="w-full md:w-[500px] text-center md:text-left -mt-10 md:mt-0">
           <h1 className="text-primary text-5xl md:text-[60px] font-bold tracking-tighter mb-2 md:-ml-1">
             clublite
@@ -51,7 +47,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           </h2>
         </div>
 
-        {/* Right Side: Form */}
         <div className="w-full md:w-[396px] flex flex-col items-center">
           <div className="bg-white p-4 rounded-[8px] shadow-lg w-full flex flex-col gap-3">
             {error && (
@@ -78,13 +73,13 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-[#1877f2] hover:bg-[#166fe5] text-white text-[20px] font-bold rounded-[6px] w-full h-[48px] transition-colors flex items-center justify-center"
+                className="bg-[#1877f2] hover:bg-[#166fe5] active:scale-[0.98] text-white text-[20px] font-bold rounded-[6px] w-full h-[48px] transition-all flex items-center justify-center"
               >
                 {loading ? <Loader2 className="animate-spin" /> : 'Log In'}
               </button>
             </form>
 
-            <a href="#" className="text-[#1877f2] text-[14px] text-center hover:underline mt-1">
+            <a href="#" className="text-[#1877f2] text-[14px] text-center hover:underline mt-1 active:opacity-70 transition-opacity">
               Forgotten password?
             </a>
 
@@ -93,7 +88,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             <div className="flex justify-center pb-2">
               <button
                 onClick={() => setShowRegister(true)}
-                className="bg-[#42b72a] hover:bg-[#36a420] text-white text-[17px] font-bold px-[16px] h-[48px] rounded-[6px] transition-colors"
+                className="bg-[#42b72a] hover:bg-[#36a420] active:scale-95 text-white text-[17px] font-bold px-[16px] h-[48px] rounded-[6px] transition-all"
               >
                 Create new account
               </button>
@@ -119,7 +114,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           onClose={() => setShowRegister(false)} 
           onSuccess={() => {
             setShowRegister(false);
-            // Optionally auto-fill email or show success message
             setError("Account created! Please log in.");
           }}
         />

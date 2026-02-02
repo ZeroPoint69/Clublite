@@ -69,40 +69,37 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
     <>
       <nav className="sticky top-0 z-50 bg-surface shadow-sm border-b border-gray-200 px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="text-2xl font-black text-primary tracking-tighter cursor-pointer" onClick={() => onTabChange('feed')}>
+          <div 
+            className="text-2xl font-black text-primary tracking-tighter cursor-pointer active:scale-95 transition-transform" 
+            onClick={() => onTabChange('feed')}
+          >
             club<span className="font-light">lite</span>
           </div>
         </div>
 
         <div className="flex items-center gap-1">
-          {/* Main Navigation Tabs - Desktop Only */}
           <div className="hidden md:flex items-center gap-1 mr-2 border-r border-gray-100 pr-2">
-            <button 
-              onClick={() => onTabChange('feed')}
-              className={`p-3 transition-colors h-14 border-b-2 ${activeTab === 'feed' ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:bg-gray-50'}`} title="Home"
-            >
-                 <Home size={24} strokeWidth={activeTab === 'feed' ? 2.5 : 2} />
-            </button>
-            <button 
-              onClick={() => onTabChange('events')}
-              className={`p-3 transition-colors h-14 border-b-2 ${activeTab === 'events' ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:bg-gray-50'}`} title="Events"
-            >
-                 <Calendar size={24} strokeWidth={activeTab === 'events' ? 2.5 : 2} />
-            </button>
-            <button 
-              onClick={() => onTabChange('members')}
-              className={`p-3 transition-colors h-14 border-b-2 ${activeTab === 'members' ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:bg-gray-50'}`} title="Members"
-            >
-                 <Users size={24} strokeWidth={activeTab === 'members' ? 2.5 : 2} />
-            </button>
+            {[
+              { id: 'feed', icon: Home, label: 'Home' },
+              { id: 'events', icon: Calendar, label: 'Events' },
+              { id: 'members', icon: Users, label: 'Members' }
+            ].map(({ id, icon: Icon, label }) => (
+              <button 
+                key={id}
+                onClick={() => onTabChange(id as any)}
+                className={`p-3 transition-all h-14 border-b-2 active:scale-90 ${activeTab === id ? 'text-primary border-primary' : 'text-text-secondary border-transparent hover:bg-gray-50'}`} 
+                title={label}
+              >
+                 <Icon size={24} strokeWidth={activeTab === id ? 2.5 : 2} />
+              </button>
+            ))}
           </div>
           
-          {/* Right Side Section: Bell Icon + Profile Group */}
           <div className="flex items-center gap-1.5">
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={handleBellClick}
-                className={`p-2.5 rounded-full transition-colors ${showNotifications ? 'bg-gray-100 text-primary' : 'text-text-secondary hover:bg-gray-100'}`} 
+                className={`p-2.5 rounded-full transition-all active:scale-90 ${showNotifications ? 'bg-gray-100 text-primary' : 'text-text-secondary hover:bg-gray-100'}`} 
                 title="Notifications"
               >
                  <Bell size={24} />
@@ -115,7 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
 
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+                  <div className="p-4 border-b border-gray-100">
                     <h3 className="font-bold text-lg">Notifications</h3>
                   </div>
                   <div className="max-h-96 overflow-y-auto no-scrollbar">
@@ -126,8 +123,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
                       </div>
                     ) : (
                       notifications.map(n => (
-                        <div key={n.id} className={`p-3 flex gap-3 hover:bg-gray-50 cursor-pointer transition-colors border-l-4 ${n.isRead ? 'border-transparent' : 'border-primary bg-primary/5'}`}>
-                          <div className="relative">
+                        <div key={n.id} className={`p-3 flex gap-3 hover:bg-gray-50 cursor-pointer transition-all active:bg-gray-100 border-l-4 ${n.isRead ? 'border-transparent' : 'border-primary bg-primary/5'}`}>
+                          <div className="relative shrink-0">
                             <Avatar src={n.actorAvatar} alt={n.actorName} size="sm" />
                             <div className={`absolute -bottom-1 -right-1 p-1 rounded-full ${getNotificationBg(n.type)}`}>
                               {getNotificationIcon(n.type)}
@@ -153,7 +150,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
             </div>
 
             <div 
-              className="flex items-center gap-2 p-1 hover:bg-gray-100 rounded-full cursor-pointer transition-colors"
+              className="flex items-center gap-2 p-1 hover:bg-gray-100 active:scale-95 rounded-full cursor-pointer transition-all"
               onClick={onProfileClick}
             >
               <div className="hidden lg:flex flex-col items-end mr-1">
@@ -163,43 +160,33 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onProfileClick, onTabChang
               <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" />
             </div>
 
-            <button className="hidden md:block p-2 text-text-secondary hover:bg-gray-100 rounded-full transition-colors">
+            <button className="hidden md:block p-2 text-text-secondary hover:bg-gray-100 active:scale-90 rounded-full transition-all">
               <Menu size={20} />
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Bottom Navigation Bar - Mobile Only */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-surface border-t border-gray-200 flex justify-around items-center h-14 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-        <button 
-          onClick={() => onTabChange('feed')}
-          className={`flex-1 flex flex-col items-center gap-0.5 ${activeTab === 'feed' ? 'text-primary' : 'text-text-secondary'}`}
-        >
-          <Home size={22} strokeWidth={activeTab === 'feed' ? 2.5 : 2} />
-          <span className={`text-[10px] ${activeTab === 'feed' ? 'font-bold' : 'font-medium'}`}>Home</span>
-        </button>
-        <button 
-          onClick={() => onTabChange('events')}
-          className={`flex-1 flex flex-col items-center gap-0.5 ${activeTab === 'events' ? 'text-primary' : 'text-text-secondary'}`}
-        >
-          <Calendar size={22} strokeWidth={activeTab === 'events' ? 2.5 : 2} />
-          <span className={`text-[10px] ${activeTab === 'events' ? 'font-bold' : 'font-medium'}`}>Events</span>
-        </button>
-        <button 
-          onClick={() => onTabChange('members')}
-          className={`flex-1 flex flex-col items-center gap-0.5 ${activeTab === 'members' ? 'text-primary' : 'text-text-secondary'}`}
-        >
-          <Users size={22} strokeWidth={activeTab === 'members' ? 2.5 : 2} />
-          <span className={`text-[10px] ${activeTab === 'members' ? 'font-bold' : 'font-medium'}`}>Club</span>
-        </button>
-        <button 
-          onClick={onProfileClick}
-          className="flex-1 flex flex-col items-center gap-0.5 text-text-secondary"
-        >
-          <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" className="w-5 h-5 border-none shadow-none" />
-          <span className="text-[10px] font-medium">Profile</span>
-        </button>
+        {[
+          { id: 'feed', icon: Home, label: 'Home' },
+          { id: 'events', icon: Calendar, label: 'Events' },
+          { id: 'members', icon: Users, label: 'Club' },
+          { id: 'profile', avatar: true, label: 'Profile' }
+        ].map(({ id, icon: Icon, label, avatar }) => (
+          <button 
+            key={id}
+            onClick={() => id === 'profile' ? onProfileClick() : onTabChange(id as any)}
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 h-full active:scale-90 transition-all ${activeTab === id ? 'text-primary' : 'text-text-secondary'}`}
+          >
+            {avatar ? (
+              <Avatar src={currentUser.avatar} alt={currentUser.name} size="sm" className="w-5 h-5 border-none shadow-none" />
+            ) : (
+              <Icon size={22} strokeWidth={activeTab === id ? 2.5 : 2} />
+            )}
+            <span className={`text-[10px] ${activeTab === id ? 'font-bold' : 'font-medium'}`}>{label}</span>
+          </button>
+        ))}
       </nav>
     </>
   );

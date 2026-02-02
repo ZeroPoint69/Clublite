@@ -33,11 +33,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
       if (error) {
         setError(error.message);
       } else if (data.user) {
-        if (data.session) {
-           onSuccess();
-        } else {
-           setError("Registration successful! Please check your email to confirm.");
-        }
+        onSuccess();
       }
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
@@ -54,7 +50,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
             <h2 className="text-3xl font-bold text-[#1c1e21]">Sign Up</h2>
             <p className="text-[#606770] text-[15px]">It's quick and easy.</p>
           </div>
-          <button onClick={onClose} className="text-[#606770] hover:bg-gray-100 rounded p-1">
+          <button onClick={onClose} className="text-[#606770] hover:bg-gray-100 active:scale-90 rounded p-1 transition-all">
             <X size={24} />
           </button>
         </div>
@@ -71,14 +67,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
               <input
                 type="text"
                 placeholder="First name"
-                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
+                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] text-[16px] focus:outline-none focus:border-primary"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
               />
               <input
                 type="text"
                 placeholder="Surname"
-                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
+                className="w-1/2 bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] text-[16px] focus:outline-none focus:border-primary"
                 value={surname}
                 onChange={(e) => setSurname(e.target.value)}
               />
@@ -87,7 +83,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
             <input
               type="email"
               placeholder="Mobile number or email address"
-              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
+              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] text-[16px] focus:outline-none focus:border-primary"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -95,7 +91,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
             <input
               type="password"
               placeholder="New password"
-              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
+              className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] text-[16px] focus:outline-none focus:border-primary"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -104,7 +100,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
               <input
                 type="text"
                 placeholder="Secret Code (Optional)"
-                className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] pl-10 placeholder-[#8d949e] text-[16px] focus:outline-none focus:border-primary"
+                className="w-full bg-[#f5f6f7] border border-[#ccd0d5] rounded-[5px] p-[11px] pl-10 text-[16px] focus:outline-none focus:border-primary"
                 value={secretCode}
                 onChange={(e) => setSecretCode(e.target.value)}
               />
@@ -112,14 +108,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onSuccess }) => 
             </div>
 
             <p className="text-[11px] text-[#777] my-3 leading-4">
-              By clicking Sign Up, you agree to our Terms, Privacy Policy and Cookies Policy. You may receive SMS notifications from us and can opt out at any time.
+              By clicking Sign Up, you agree to our Terms, Privacy Policy and Cookies Policy.
             </p>
 
             <div className="flex justify-center mt-5">
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-[#00a400] hover:bg-[#008f00] text-white font-bold text-lg px-12 py-1.5 rounded-[6px] shadow-sm transition-colors min-w-[194px] flex justify-center items-center h-[45px]"
+                className="bg-[#00a400] hover:bg-[#008f00] active:scale-[0.98] text-white font-bold text-lg px-12 py-1.5 rounded-[6px] shadow-sm transition-all min-w-[194px] flex justify-center items-center h-[45px]"
               >
                 {loading ? <Loader2 size={24} className="animate-spin" /> : 'Sign Up'}
               </button>

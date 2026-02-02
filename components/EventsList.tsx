@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock, Users, Info, Plus, Loader2, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Plus, Loader2, Edit2, Trash2 } from 'lucide-react';
 import { ClubEvent, User } from '../types';
 import { getEvents, toggleJoinEvent, subscribeToEvents, deleteEvent } from '../services/dataService';
 import { supabase } from '../services/supabaseClient';
@@ -27,17 +27,11 @@ const EventsList: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setCurrentUser(mapSessionUser(session.user));
-      }
+      if (session?.user) setCurrentUser(mapSessionUser(session.user));
       fetchEvents();
     };
     init();
-
-    const unsubscribe = subscribeToEvents(() => {
-      fetchEvents();
-    });
-
+    const unsubscribe = subscribeToEvents(() => fetchEvents());
     return () => unsubscribe();
   }, []);
 
@@ -59,18 +53,11 @@ const EventsList: React.FC = () => {
     try {
       const date = new Date(dateStr);
       return date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
-    } catch {
-      return 'EVENT';
-    }
+    } catch { return 'EVENT'; }
   };
 
   const getDay = (dateStr: string) => {
-    try {
-      const date = new Date(dateStr);
-      return date.getDate();
-    } catch {
-      return '??';
-    }
+    try { return new Date(dateStr).getDate(); } catch { return '??'; }
   };
 
   if (loading) {
@@ -87,16 +74,14 @@ const EventsList: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">
             Club Events
-            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
-              Upcoming
-            </span>
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Upcoming</span>
           </h2>
           <p className="text-sm text-text-secondary mt-1">Activities planned for the community.</p>
         </div>
         {isAdmin && (
           <button 
             onClick={() => { setEditingEvent(undefined); setShowModal(true); }}
-            className="bg-primary text-white p-2.5 rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
+            className="bg-primary text-white p-2.5 rounded-full shadow-lg shadow-primary/20 hover:scale-110 active:scale-90 transition-all"
             title="Add New Event"
           >
             <Plus size={24} />
@@ -107,46 +92,37 @@ const EventsList: React.FC = () => {
       <div className="space-y-4">
         {events.map(event => {
           const isJoined = currentUser ? event.attendees.includes(currentUser.id) : false;
-          
           return (
             <div key={event.id} className="bg-surface rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col sm:flex-row group transition-all hover:shadow-md">
-              {/* Left: Image */}
               <div className="w-full sm:w-44 h-44 sm:h-auto relative shrink-0">
-                <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
                 <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm rounded-lg p-1.5 flex flex-col items-center shadow-md min-w-[44px]">
                   <span className="text-[10px] font-black text-primary uppercase leading-none">{getMonthName(event.date)}</span>
                   <span className="text-lg font-bold text-text leading-tight">{getDay(event.date)}</span>
                 </div>
               </div>
 
-              {/* Right: Content */}
               <div className="flex-1 p-4 flex flex-col">
                 <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-bold text-lg text-text leading-tight group-hover:text-primary transition-colors">
-                    {event.title}
-                  </h3>
+                  <h3 className="font-bold text-lg text-text leading-tight group-hover:text-primary transition-colors">{event.title}</h3>
                   {isAdmin && (
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
                       <button 
                         onClick={() => { setEditingEvent(event); setShowModal(true); }}
-                        className="p-1.5 text-text-secondary hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-1.5 text-text-secondary hover:bg-gray-100 active:scale-90 rounded-lg transition-all"
                       >
                         <Edit2 size={16} />
                       </button>
                       <button 
                         onClick={() => setEventToDelete(event.id)}
-                        className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-red-400 hover:bg-red-50 active:scale-90 rounded-lg transition-all"
                       >
                         <Trash2 size={16} />
                       </button>
                     </div>
                   )}
                 </div>
-                
-                <p className="text-xs text-text-secondary line-clamp-2 mb-3 leading-relaxed">
-                  {event.description}
-                </p>
-                
+                <p className="text-xs text-text-secondary line-clamp-2 mb-3 leading-relaxed">{event.description}</p>
                 <div className="space-y-1 mt-auto">
                   <div className="flex items-center gap-2 text-[11px] font-medium text-text-secondary uppercase tracking-wider">
                     <Clock size={12} className="text-gray-400" />
@@ -156,19 +132,12 @@ const EventsList: React.FC = () => {
                     <MapPin size={12} className="text-gray-400" />
                     <span className="truncate">{event.location}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] font-medium text-text-secondary uppercase tracking-wider">
-                    <Users size={12} className="text-gray-400" />
-                    <span>{event.attendees.length} attending</span>
-                  </div>
                 </div>
-
                 <div className="mt-4">
                   <button 
                     onClick={() => handleJoin(event.id)}
-                    className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                      isJoined 
-                        ? 'bg-gray-100 text-text-secondary hover:bg-gray-200' 
-                        : 'bg-primary text-white hover:bg-primary-hover shadow-md shadow-primary/10 active:scale-95'
+                    className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
+                      isJoined ? 'bg-gray-100 text-text-secondary hover:bg-gray-200' : 'bg-primary text-white hover:bg-primary-hover shadow-md shadow-primary/10'
                     }`}
                   >
                     {isJoined ? 'Joined' : 'Join Event'}
@@ -178,14 +147,10 @@ const EventsList: React.FC = () => {
             </div>
           );
         })}
-
         {events.length === 0 && (
           <div className="bg-surface rounded-xl p-16 text-center border-2 border-dashed border-gray-200">
             <Calendar className="mx-auto mb-3 opacity-20 text-gray-400" size={56} />
             <h3 className="font-bold text-lg text-text">No Events Scheduled</h3>
-            <p className="text-text-secondary text-sm mt-1 max-w-[200px] mx-auto">
-              Check back later or contact an admin for club activities.
-            </p>
           </div>
         )}
       </div>
@@ -201,7 +166,7 @@ const EventsList: React.FC = () => {
       <ConfirmDialog 
         isOpen={!!eventToDelete}
         title="Delete Event?"
-        message="Are you sure you want to permanently delete this event? This cannot be undone."
+        message="Are you sure you want to permanently delete this event?"
         onConfirm={handleDelete}
         onCancel={() => setEventToDelete(null)}
       />
